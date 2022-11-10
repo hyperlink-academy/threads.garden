@@ -9,6 +9,9 @@ AND moderation by default.
 How do you make moderation feel nice? Forget about it. It's basically entirely
 to prevent spam.
 
+## REQUIRED 
+### Environment Variables
+- TOKEN_SECRET: a secret string used for signing tokens
 
 ## Actions 
 

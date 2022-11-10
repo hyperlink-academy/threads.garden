@@ -1,10 +1,15 @@
+import { Env } from ".";
+
 export type Route = {
   method: "GET" | "POST";
   route: string;
   handler: (
     request: Request,
-    queryParams: { [k: string]: string },
-    searchParams: { [k: string]: string }
+    ctx: {
+      queryParams: { [k: string]: string };
+      searchParams: { [k: string]: string };
+      env: Env;
+    }
   ) => Promise<Response>;
 };
 
@@ -22,16 +27,16 @@ export function Router({ base, routes }: { base: string; routes: Route[] }) {
       }/*$`
     ),
   }));
-  return async (request: Request) => {
+  return async (request: Request, env: Env) => {
     let match,
       url = new URL(request.url);
     for (let { method, matcher, handler } of routeMatchers) {
       if (method === request.method && (match = url.pathname.match(matcher))) {
-        return await handler(
-          request,
-          match.groups || {},
-          Object.fromEntries(url.searchParams)
-        ).catch(() => {
+        return await handler(request, {
+          env,
+          queryParams: match.groups || {},
+          searchParams: Object.fromEntries(url.searchParams),
+        }).catch(() => {
           return new Response("An unexpected Error occured", { status: 500 });
         });
       }

@@ -1,12 +1,24 @@
 import { parse, serialize } from "./cookies";
 
-const encoder = new TextEncoder();
-const secretKeyData = encoder.encode("my secret symmetric key");
-
 type Token = { username: string };
 
 let authTokenCookie = "X-Threads-Token";
 let authSignatureCookie = "X-Threads-Signature";
+
+const encoder = new TextEncoder();
+let cachedKey: CryptoKey;
+const getKey = async (secret: string) => {
+  if (cachedKey) return cachedKey;
+  const secretKeyData = encoder.encode(secret);
+  cachedKey = await crypto.subtle.importKey(
+    "raw",
+    secretKeyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["verify", "sign"]
+  );
+  return cachedKey;
+};
 
 function byteStringToUint8Array(byteString: string) {
   const ui = new Uint8Array(byteString.length);
@@ -16,21 +28,14 @@ function byteStringToUint8Array(byteString: string) {
   return ui;
 }
 
-export async function verifyRequest(req: Request) {
+export async function verifyRequest(req: Request, secret: string) {
   let cookies = parse(req.headers.get("Cookie") || "");
-  console.log(cookies);
   let signature = cookies[authSignatureCookie];
   let token = cookies[authTokenCookie];
   if (!signature || !token) return null;
 
-  const key = await crypto.subtle.importKey(
-    "raw",
-    secretKeyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["verify"]
-  );
   const receivedMac = byteStringToUint8Array(atob(signature));
+  let key = await getKey(secret);
   const verified = await crypto.subtle.verify(
     "HMAC",
     key,
@@ -46,8 +51,12 @@ export async function verifyRequest(req: Request) {
   }
 }
 
-export async function addTokenHeaders(token: Token, headers: Headers) {
-  let signedToken = await signToken(token);
+export async function addTokenHeaders(
+  token: Token,
+  headers: Headers,
+  secret: string
+) {
+  let signedToken = await signToken(token, secret);
   headers.append(
     "Set-Cookie",
     serialize(authTokenCookie, signedToken.token, {
@@ -80,14 +89,8 @@ export function removeTokenHeaders(headers: Headers) {
   );
 }
 
-async function signToken(token: Token) {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    secretKeyData,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
+async function signToken(token: Token, secret: string) {
+  const key = await getKey(secret);
   let data = JSON.stringify(token);
   const mac = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
 

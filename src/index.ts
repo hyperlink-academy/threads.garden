@@ -3,14 +3,21 @@ import { h, html } from "./html";
 import { Router } from "./router";
 import { LoginRoutes } from "./routes/login";
 
+export type Env = { TOKEN_SECRET: string };
+export default {
+  fetch: (request: Request, env: Env) => {
+    return router(request, env);
+  },
+};
+
 let router = Router({
   base: "",
   routes: [
     {
       method: "GET",
       route: "/",
-      handler: async (req) => {
-        let auth = await verifyRequest(req);
+      handler: async (req, { env }) => {
+        let auth = await verifyRequest(req, env.TOKEN_SECRET);
         return new Response(
           html(
             [h("title", "threads.garden")],
@@ -30,8 +37,8 @@ let router = Router({
     {
       method: "GET",
       route: "/home",
-      handler: async (req) => {
-        let auth = await verifyRequest(req);
+      handler: async (req, { env }) => {
+        let auth = await verifyRequest(req, env.TOKEN_SECRET);
         if (!auth)
           return new Response("", {
             status: 302,
@@ -69,14 +76,9 @@ let router = Router({
     {
       method: "GET",
       route: "/u/:username",
-      handler: async (_request, queryParams) => {
+      handler: async (_request, { queryParams }) => {
         return new Response("user page: " + queryParams.username);
       },
     },
   ],
 });
-export default {
-  fetch: (request: Request) => {
-    return router(request);
-  },
-};

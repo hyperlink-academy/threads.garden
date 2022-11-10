@@ -6,7 +6,7 @@ export const LoginRoutes: Route[] = [
   {
     method: "POST",
     route: "/login",
-    handler: async (request) => {
+    handler: async (request, { env }) => {
       let formData = await request.formData();
       let username = formData.get("username");
       let password = formData.get("password");
@@ -19,7 +19,7 @@ export const LoginRoutes: Route[] = [
         });
 
       let headers = new Headers({ Location: "/home" });
-      await addTokenHeaders({ username: "jared" }, headers);
+      await addTokenHeaders({ username: "jared" }, headers, env.TOKEN_SECRET);
       return new Response("", {
         status: 302,
         headers,
@@ -41,9 +41,9 @@ export const LoginRoutes: Route[] = [
   {
     method: "GET",
     route: "/login",
-    handler: async (req, _urlParams) => {
+    handler: async (req, { env }) => {
       // Check to see if they are logged in and if so redirect to a homepage
-      let auth = await verifyRequest(req);
+      let auth = await verifyRequest(req, env.TOKEN_SECRET);
       if (auth)
         return new Response("", {
           status: 302,
