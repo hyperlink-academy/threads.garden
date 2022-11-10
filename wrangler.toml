@@ -1,0 +1,28 @@
+name = "threads-garden"
+account_id = "81c1ee2e102b2279be9311f73c01ec7f"
+workers_dev = true
+routes = ["threads.garden"]
+
+usage_model = 'unbound'
+compatibility_flags = []
+
+compatibility_date = "2022-01-31"
+
+kv_namespaces = [ ]
+
+main = "out/index.mjs"
+
+
+[build]
+command = "npm run build"
+watch_dir = "./src"
+
+[durable_objects]
+bindings = [
+]
+
+[[rules]]
+type = "ESModule"
+globs = ["**/*.mjs"]
+
+
