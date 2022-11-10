@@ -6,7 +6,7 @@ export type Route = {
   handler: (
     request: Request,
     ctx: {
-      queryParams: { [k: string]: string };
+      routeParams: { [k: string]: string };
       searchParams: { [k: string]: string };
       env: Env;
     }
@@ -34,7 +34,7 @@ export function Router({ base, routes }: { base: string; routes: Route[] }) {
       if (method === request.method && (match = url.pathname.match(matcher))) {
         return await handler(request, {
           env,
-          queryParams: match.groups || {},
+          routeParams: match.groups || {},
           searchParams: Object.fromEntries(url.searchParams),
         }).catch(() => {
           return new Response("An unexpected Error occured", { status: 500 });

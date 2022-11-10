@@ -76,8 +76,8 @@ let router = Router({
     {
       method: "GET",
       route: "/u/:username",
-      handler: async (_request, { queryParams }) => {
-        return new Response("user page: " + queryParams.username);
+      handler: async (_request, { routeParams }) => {
+        return new Response("user page: " + routeParams.username);
       },
     },
   ],
