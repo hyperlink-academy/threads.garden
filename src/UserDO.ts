@@ -1,17 +1,26 @@
 import { Env } from ".";
 import { apiRouter, makeAPIClient, makeRoute } from "./api_router";
+import { threadDOClient } from "./ThreadDO";
 
 type LoginToken = { ts: number; token: string };
+type Thread = {
+  id: string;
+  dateCreated: string;
+  title: string;
+};
+
+type Metadata = { owner: string };
 let routes = [
   makeRoute({
     route: "verify_login_token",
-    handler: async (msg: { token: string }, { state }) => {
+    handler: async (msg: { token: string; owner: string }, { state }) => {
       let data = await state.storage.get<LoginToken>(`login-token`);
       if (!data) return { valid: false };
 
       if (data.token !== msg.token || Date.now() - data.ts > 1000 * 60 * 30)
         return { valid: false };
       state.storage.delete("login-token");
+      state.storage.put<Metadata>("metadata", { owner: msg.owner });
       return { valid: true };
     },
   }),
@@ -24,6 +33,44 @@ let routes = [
         ts: Date.now(),
       });
       return { token };
+    },
+  }),
+
+  makeRoute({
+    route: "get_threads",
+    handler: async (msg: {}, { state }) => {
+      let threads = (await state.storage.get<Thread[]>("threads")) || [];
+      return { threads };
+    },
+  }),
+  makeRoute({
+    route: "create_thread",
+    handler: async (msg: { url: string; title: string }, { env, state }) => {
+      let metadata = await state.storage.get<Metadata>("metadata");
+      if (!metadata) {
+        console.log("Error: called create_thread before authorization");
+        return { error: "Called before initialization" };
+      }
+      let newThreadID = env.THREAD.newUniqueId();
+      let stub = env.THREAD.get(newThreadID);
+      await threadDOClient(stub, "init", {
+        owner: metadata.owner,
+        url: msg.url,
+        title: msg.title,
+      });
+
+      // Save that thread id somewhere along w/ title and ID
+      let threads = (await state.storage.get<Thread[]>("threads")) || [];
+      await state.storage.put<Thread[]>("threads", [
+        {
+          id: newThreadID.toString(),
+          dateCreated: new Date().toISOString(),
+          title: msg.title,
+        },
+        ...threads,
+      ]);
+
+      return { threadID: newThreadID.toString() };
     },
   }),
 ];

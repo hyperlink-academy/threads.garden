@@ -19,12 +19,17 @@ watch_dir = "./src"
 
 [durable_objects]
 bindings = [
-  {name = "USER", class_name = "UserDO"}
+  {name = "USER", class_name = "UserDO"},
+  {name = "THREAD", class_name = "ThreadDO"}
 ]
 
 [[migrations]]
 tag = "v1" # Should be unique for each entry
 new_classes = ["UserDO"]
+
+[[migrations]]
+tag = "v2" # Should be unique for each entry
+new_classes = ["ThreadDO"]
 
 [[rules]]
 type = "ESModule"

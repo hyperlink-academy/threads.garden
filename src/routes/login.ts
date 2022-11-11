@@ -71,6 +71,7 @@ export const LoginRoutes: Route[] = [
       let emailNormalized = email.toString().toLocaleLowerCase();
       let userDO = env.USER.get(env.USER.idFromName(emailNormalized));
       let loginToken = await userDOClient(userDO, "verify_login_token", {
+        owner: emailNormalized,
         token,
       });
 

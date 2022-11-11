@@ -1,14 +1,19 @@
 import { verifyRequest } from "./auth";
 import { h, html } from "./html";
 import { Router } from "./router";
+import { create_thread_route } from "./routes/create_thread";
+import { home_route } from "./routes/home";
 import { LoginRoutes } from "./routes/login";
+import { thread_route } from "./routes/thread";
 
 export type Env = {
   TOKEN_SECRET: string;
   USER: DurableObjectNamespace;
+  THREAD: DurableObjectNamespace;
   POSTMARK_API_TOKEN?: string;
 };
 export { UserDO } from "./UserDO";
+export { ThreadDO } from "./ThreadDO";
 export default {
   fetch: (request: Request, env: Env) => {
     return router(request, env);
@@ -18,6 +23,10 @@ export default {
 let router = Router({
   base: "",
   routes: [
+    create_thread_route,
+    thread_route,
+    home_route,
+    ...LoginRoutes,
     {
       method: "GET",
       route: "/",
@@ -28,6 +37,15 @@ let router = Router({
             [h("title", "threads.garden")],
             [
               h("p", "this is a little site to make threads on the internet"),
+              h(
+                "p",
+                "when you create a thread, people can reply by submitting links"
+              ),
+              h("p", "you moderate which links you accept for your thread"),
+              h(
+                "p",
+                "you can subscribe to threads and once a day we'll send you an email with any new replies to all threads you subscribe to"
+              ),
               auth
                 ? h("a", { href: "/home" }, "home")
                 : h("a", { href: "/login" }, "login"),
@@ -37,45 +55,6 @@ let router = Router({
             headers: { "Content-type": "text/html" },
           }
         );
-      },
-    },
-    {
-      method: "GET",
-      route: "/home",
-      handler: async (req, { env }) => {
-        let auth = await verifyRequest(req, env.TOKEN_SECRET);
-        if (!auth)
-          return new Response("", {
-            status: 302,
-            headers: { Location: "/login" },
-          });
-        return new Response(
-          html(
-            [h("title", "threads.garden")],
-            [
-              h("h1", "Welcome, " + auth.username),
-              h("a", { href: "/logout" }, "logout"),
-              h(
-                "p",
-                "this is your homepage, it should have a list of stuff. If you aren't logged in, redirect"
-              ),
-              h("a", { href: "/new" }, h("button", "create a thread")),
-            ]
-          ),
-          {
-            headers: { "Content-type": "text/html" },
-          }
-        );
-      },
-    },
-    ...LoginRoutes,
-    {
-      method: "GET",
-      route: "/new",
-      handler: async () => {
-        return new Response(html([], [h("p", "a new thread!")]), {
-          headers: { "Content-type": "text/html" },
-        });
       },
     },
     {
