@@ -32,14 +32,17 @@ export const LoginRoutes: Route[] = [
           day: "2-digit",
           year: "numeric",
           month: "short",
+          hour: "numeric",
+          minute: "numeric",
         })})`,
-        html(
-          [],
+        h("div", [
+          (h("h1", "Hi! Welcome to threads.garden"),
           h("span", [
-            `Click this link to sign in: `,
-            h("a", { href: link.toString() }, link.toString()),
-          ])
-        ),
+            `Click `,
+            h("a", { href: link.toString() }, "here"),
+            ` to sign in.`,
+          ])),
+        ])(),
         env.POSTMARK_API_TOKEN
       );
 
