@@ -3,7 +3,7 @@ account_id = "81c1ee2e102b2279be9311f73c01ec7f"
 workers_dev = true
 routes = ["threads.garden"]
 
-usage_model = 'unbound'
+usage_model = 'bundled'
 compatibility_flags = []
 
 compatibility_date = "2022-01-31"
