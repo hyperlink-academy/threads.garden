@@ -62,7 +62,7 @@ export async function addTokenHeaders(
     serialize(authTokenCookie, signedToken.token, {
       path: "/",
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "lax",
       secure: true,
     })
   );
@@ -72,7 +72,7 @@ export async function addTokenHeaders(
     serialize(authSignatureCookie, signedToken.signature, {
       path: "/",
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "lax",
       secure: true,
     })
   );
