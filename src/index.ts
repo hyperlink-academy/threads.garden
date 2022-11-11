@@ -3,7 +3,12 @@ import { h, html } from "./html";
 import { Router } from "./router";
 import { LoginRoutes } from "./routes/login";
 
-export type Env = { TOKEN_SECRET: string };
+export type Env = {
+  TOKEN_SECRET: string;
+  USER: DurableObjectNamespace;
+  POSTMARK_API_TOKEN?: string;
+};
+export { UserDO } from "./UserDO";
 export default {
   fetch: (request: Request, env: Env) => {
     return router(request, env);
