@@ -34,45 +34,10 @@ export const home_route: Route = {
                   h("li", h("a", { href: `/t/${t.id}` }, t.title))
                 )
               ),
-          h(
-            "form",
-            {
-              method: "POST",
-              action: "/create_thread",
-              style:
-                "max-width: 320px; padding: 8px; border: 1px solid; display: flex; flex-direction:column; gap: 4px;",
-            },
-            [
-              h(
-                "div",
-                { style: "display:grid;grid-template-columns: 32px auto;" },
-                [
-                  h("label", { for: "url" }, "url"),
-                  h("input", {
-                    id: "url",
-                    name: "url",
-                    type: "url",
-                    required: true,
-                  }),
-                ]
-              ),
-              h(
-                "div",
-                { style: "display:grid;grid-template-columns: 32px auto;" },
-                [
-                  h("label", { for: "title" }, "title"),
-                  h("input", {
-                    required: true,
-                    id: "title",
-                    name: "title",
-                    type: "text",
-                    maxlength: "140",
-                  }),
-                ]
-              ),
-              h("button", "create a thread"),
-            ]
-          ),
+          SubmitLinkForm({
+            action: "/create_thread",
+            buttonText: "create a thread",
+          }),
         ]
       ),
       {
@@ -81,3 +46,36 @@ export const home_route: Route = {
     );
   },
 };
+
+export const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
+  h(
+    "form",
+    {
+      method: "POST",
+      action: props.action,
+      style:
+        "max-width: 320px; padding: 8px; border: 1px solid; display: flex; flex-direction:column; gap: 4px;",
+    },
+    [
+      h("div", { style: "display:grid;grid-template-columns: 32px auto;" }, [
+        h("label", { for: "url" }, "url"),
+        h("input", {
+          id: "url",
+          name: "url",
+          type: "url",
+          required: true,
+        }),
+      ]),
+      h("div", { style: "display:grid;grid-template-columns: 32px auto;" }, [
+        h("label", { for: "title" }, "title"),
+        h("input", {
+          required: true,
+          id: "title",
+          name: "title",
+          type: "text",
+          maxlength: "140",
+        }),
+      ]),
+      h("button", props.buttonText),
+    ]
+  );

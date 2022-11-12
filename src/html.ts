@@ -90,6 +90,7 @@ export function html(head: Child | Child[], children: Child | Child[]) {
         h(
           "style",
           `
+          ul { padding-left: 16px; }
           body { background: snow; color: darkslategrey; margin: auto; max-width: 800px;padding: 16px; }
           `
         ),

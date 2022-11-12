@@ -25,6 +25,21 @@ let routes = [
     },
   }),
   makeRoute({
+    route: "add_entry",
+    handler: async (
+      msg: { url: string; title: string; submitter: string },
+      { state }
+    ) => {
+      let threads = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let newEntries = [
+        ...threads,
+        { title: msg.title, url: msg.url, submitter: msg.submitter },
+      ];
+      await state.storage.put<ThreadEntry[]>("entries", newEntries);
+      return { entries: newEntries };
+    },
+  }),
+  makeRoute({
     route: "get_entries",
     handler: async (_msg: {}, { state }) => {
       let threads = (await state.storage.get<ThreadEntry[]>("entries")) || [];

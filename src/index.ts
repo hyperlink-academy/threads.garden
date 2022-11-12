@@ -4,7 +4,7 @@ import { Router } from "./router";
 import { create_thread_route } from "./routes/create_thread";
 import { home_route } from "./routes/home";
 import { LoginRoutes } from "./routes/login";
-import { thread_route } from "./routes/thread";
+import { thread_routes } from "./routes/thread";
 
 export type Env = {
   TOKEN_SECRET: string;
@@ -24,8 +24,8 @@ let router = Router({
   base: "",
   routes: [
     create_thread_route,
-    thread_route,
     home_route,
+    ...thread_routes,
     ...LoginRoutes,
     {
       method: "GET",
