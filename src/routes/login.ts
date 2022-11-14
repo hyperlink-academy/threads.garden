@@ -21,7 +21,9 @@ export const LoginRoutes: Route[] = [
       let loginToken = await userDOClient(userDO, "generateLoginToken", {});
 
       let url = new URL(request.url);
-      let link = new URL(`${url.origin}/magic_link`);
+      let link = new URL(
+        `${request.headers.get("origin")?.toString()}/magic_link`
+      );
 
       link.searchParams.set("email", emailNormalized);
       link.searchParams.set("token", loginToken.token);

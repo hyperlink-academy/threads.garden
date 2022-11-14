@@ -15,17 +15,29 @@ export const thread_routes: Route[] = [
       let threadStub = env.THREAD.get(
         env.THREAD.idFromString(routeParams.thread)
       );
-      let entries = await threadDOClient(threadStub, "get_entries", {});
+      let data = await threadDOClient(threadStub, "get_data", {
+        username: auth?.username,
+      });
+      let action = data.subscribed ? "unsubscribe" : "subscribe";
+
       return new Response(
         html(
           [h("title", "thread")],
           [
             h(
               "ul",
-              entries.threads.map((e) =>
-                h("li", h("a", { href: e.url }, e.title))
-              )
+              data.threads.map((e) => h("li", h("a", { href: e.url }, e.title)))
             ),
+            auth
+              ? h(
+                  "form",
+                  {
+                    action: `/t/${routeParams.thread}/${action}`,
+                    method: "POST",
+                  },
+                  h("button", action)
+                )
+              : null,
             !auth
               ? null
               : SubmitLinkForm({
@@ -38,6 +50,43 @@ export const thread_routes: Route[] = [
           headers: { "Content-type": "text/html" },
         }
       );
+    },
+  },
+  {
+    method: "POST",
+    route: "/t/:thread/subscribe",
+    handler: async (request, { routeParams, env }) => {
+      if (!routeParams.thread) return four04();
+      console.log(request.headers);
+      let auth = await verifyRequest(request, env.TOKEN_SECRET);
+      if (!auth) return redirect(`/t/${routeParams.thread}`);
+
+      let threadStub = env.THREAD.get(
+        env.THREAD.idFromString(routeParams.thread)
+      );
+      await threadDOClient(threadStub, "subscribe", {
+        username: auth.username,
+      });
+
+      return redirect(`/t/${routeParams.thread}`);
+    },
+  },
+  {
+    method: "POST",
+    route: "/t/:thread/unsubscribe",
+    handler: async (request, { routeParams, env }) => {
+      if (!routeParams.thread) return four04();
+      let auth = await verifyRequest(request, env.TOKEN_SECRET);
+      if (!auth) return redirect(`/t/${routeParams.thread}`);
+
+      let threadStub = env.THREAD.get(
+        env.THREAD.idFromString(routeParams.thread)
+      );
+      await threadDOClient(threadStub, "unsubscribe", {
+        username: auth.username,
+      });
+
+      return redirect(`/t/${routeParams.thread}`);
     },
   },
   {
