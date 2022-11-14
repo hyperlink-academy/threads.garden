@@ -3,6 +3,7 @@ import { apiRouter, makeAPIClient, makeRoute } from "./api_router";
 import { userDOClient } from "./UserDO";
 
 type ThreadEntry = {
+  id: string;
   title: string;
   url: string;
   submitter: string;
@@ -36,9 +37,10 @@ let routes = [
       if (owner) return {};
       await state.storage.put<string>("owner", msg.owner);
       let threads = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let id = crypto.randomUUID();
       await state.storage.put<ThreadEntry[]>("entries", [
         ...threads,
-        { title: msg.title, url: msg.url, submitter: msg.owner },
+        { title: msg.title, url: msg.url, submitter: msg.owner, id },
       ]);
       return {};
     },
@@ -55,7 +57,12 @@ let routes = [
         (await state.storage.get<Subscriber[]>("subscribers")) || [];
       let newEntries = [
         ...entries,
-        { title: msg.title, url: msg.url, submitter: msg.submitter },
+        {
+          title: msg.title,
+          url: msg.url,
+          submitter: msg.submitter,
+          id: crypto.randomUUID(),
+        },
       ];
       await state.storage.put<ThreadEntry[]>("entries", newEntries);
       let date = new Date().toISOString();
