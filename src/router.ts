@@ -1,7 +1,8 @@
 import { Env } from ".";
 
+type Method = "GET" | "POST" | "DELETE";
 export type Route = {
-  method: "GET" | "POST";
+  method: Method | Method[];
   route: string;
   handler: (
     request: Request,
@@ -31,7 +32,10 @@ export function Router({ base, routes }: { base: string; routes: Route[] }) {
     let match,
       url = new URL(request.url);
     for (let { method, matcher, handler } of routeMatchers) {
-      if (method === request.method && (match = url.pathname.match(matcher))) {
+      if (
+        [method].flat().includes(request.method as Method) &&
+        (match = url.pathname.match(matcher))
+      ) {
         return await handler(request, {
           env,
           routeParams: match.groups || {},

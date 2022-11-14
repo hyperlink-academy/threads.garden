@@ -33,9 +33,13 @@ export const thread_routes: Route[] = [
                   "form",
                   {
                     action: `/t/${routeParams.thread}/${action}`,
-                    method: "POST",
+                    method: data.subscribed ? "DELETE" : "POST",
                   },
-                  h("button", action)
+                  h(
+                    "button",
+
+                    data.subscribed ? "unsubscribe" : "subscribe"
+                  )
                 )
               : null,
             !auth
@@ -53,38 +57,24 @@ export const thread_routes: Route[] = [
     },
   },
   {
-    method: "POST",
+    method: ["POST", "DELETE"],
     route: "/t/:thread/subscribe",
     handler: async (request, { routeParams, env }) => {
       if (!routeParams.thread) return four04();
-      console.log(request.headers);
       let auth = await verifyRequest(request, env.TOKEN_SECRET);
       if (!auth) return redirect(`/t/${routeParams.thread}`);
 
       let threadStub = env.THREAD.get(
         env.THREAD.idFromString(routeParams.thread)
       );
-      await threadDOClient(threadStub, "subscribe", {
-        username: auth.username,
-      });
-
-      return redirect(`/t/${routeParams.thread}`);
-    },
-  },
-  {
-    method: "POST",
-    route: "/t/:thread/unsubscribe",
-    handler: async (request, { routeParams, env }) => {
-      if (!routeParams.thread) return four04();
-      let auth = await verifyRequest(request, env.TOKEN_SECRET);
-      if (!auth) return redirect(`/t/${routeParams.thread}`);
-
-      let threadStub = env.THREAD.get(
-        env.THREAD.idFromString(routeParams.thread)
-      );
-      await threadDOClient(threadStub, "unsubscribe", {
-        username: auth.username,
-      });
+      if (request.method === "DELETE")
+        await threadDOClient(threadStub, "unsubscribe", {
+          username: auth.username,
+        });
+      else
+        await threadDOClient(threadStub, "subscribe", {
+          username: auth.username,
+        });
 
       return redirect(`/t/${routeParams.thread}`);
     },
