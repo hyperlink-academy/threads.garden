@@ -38,7 +38,7 @@ export const sendEmail = async (
               to: ${To}
               subject: ${Subject}
 
-              ${content}
+              ${content.replaceAll("&amp;", "&")}
               `);
   }
   return;
