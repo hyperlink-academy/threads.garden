@@ -1,6 +1,9 @@
 ul {
   padding-left: 16px;
 }
+html {
+  scrollbar-gutter: stable;
+}
 body {
   background-color: floralwhite;
   color: darkslategrey;
@@ -15,6 +18,26 @@ body {
 a {
   color: green;
 }
+
 pre {
   padding: initial;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.gap-2 {
+  gap: 2rem;
+}
+
+.align-self-center {
+  align-self: center;
+}
+.space-between {
+  justify-content: space-between;
 }

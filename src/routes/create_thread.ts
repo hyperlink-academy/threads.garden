@@ -23,7 +23,10 @@ export const create_thread_route: Route = {
     if (thread.error)
       return new Response(
         html(
-          [h("title", "An error occured")],
+          {
+            head: h("title", "An error occured"),
+            token: auth,
+          },
           [h("p", "Sorry! Something went wrong creating your thread.")]
         ),
         { headers: { "Content-type": "text/html" } }

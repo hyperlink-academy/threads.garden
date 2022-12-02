@@ -1,4 +1,5 @@
 export type Child = string | (() => string) | null;
+import { Token } from "auth";
 import styles from "./styles.css";
 type Attributes = { [k: string]: string | boolean };
 export function h(
@@ -80,18 +81,33 @@ function escapeHtml(str: string) {
   return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
 }
 
-export function html(head: Child | Child[], children: Child | Child[]) {
+export function html(
+  props: { token: Token | null; head: Child | Child[] },
+  children: Child | Child[]
+) {
   return (
     "<!DOCTYPE html> \n" +
     h("html", { lang: "en-US" }, [
       h("head", [
-        ...[head].flat(),
+        ...[props.head].flat(),
         h("meta", { charset: "utf-8" }),
         h("meta", { name: "viewport", content: "width=device-width" }),
         h("style", styles),
       ]),
       h("body", [
-        h("a", { href: "/" }, h("h1", "threads.garden")),
+        h("div", { class: "flex flex-row gap-2 space-between" }, [
+          h("a", { href: "/" }, h("h1", "threads.garden")),
+
+          h(
+            "div",
+            { style: "text-align: right;", class: "align-self-center" },
+            [
+              props.token
+                ? h("a", { href: "/home" }, "home")
+                : h("a", { href: "/login" }, "login"),
+            ]
+          ),
+        ]),
         ...[children].flat(),
       ]),
     ])()

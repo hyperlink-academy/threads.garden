@@ -23,7 +23,10 @@ export const thread_routes: Route[] = [
 
       return new Response(
         html(
-          [h("title", "thread")],
+          {
+            token: auth,
+            head: h("title", "thread"),
+          },
           [
             h(
               "ul",

@@ -24,7 +24,10 @@ export const home_route: Route = {
     }
     return new Response(
       html(
-        [h("title", "threads.garden")],
+        {
+          token: auth,
+          head: [h("title", "threads.garden")],
+        },
         [
           h("h1", "Welcome, " + auth.username),
           h("a", { href: "/logout" }, "logout"),

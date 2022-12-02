@@ -50,7 +50,7 @@ export const LoginRoutes: Route[] = [
 
       return new Response(
         html(
-          [],
+          { token: null, head: [] },
           h("p", [
             "We sent an an email to ",
             h("code", emailNormalized),
@@ -84,7 +84,7 @@ export const LoginRoutes: Route[] = [
       } else
         return new Response(
           html(
-            [],
+            { head: [], token: null },
             h("p", [
               "Your link is expired or invalid please ",
               h("a", { href: "/login" }, "login again"),
@@ -127,7 +127,10 @@ export const LoginRoutes: Route[] = [
 
 const LoginPage = (props: { incorrect: boolean }) =>
   html(
-    [h("title", "threads.garden: login")],
+    {
+      token: null,
+      head: h("title", "threads.garden: login"),
+    },
     [
       h("form", { method: "POST" }, [
         h("div", [
