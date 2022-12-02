@@ -24,7 +24,7 @@ export function h(
 const renderAttributes = (attrs: Attributes) =>
   Object.entries(attrs)
     .map(([k, v]) =>
-      typeof v === "string" ? `${escapeHtml(k)}="${escapeHtml(v)}"` : k
+      typeof v === "string" ? `${escapeHtml(k)}="${escapeHtml(v)}"` : v ? k : ""
     )
     .join(" ");
 
