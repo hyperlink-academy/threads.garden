@@ -1,4 +1,5 @@
 export type Child = string | (() => string) | null;
+import styles from "./styles.css";
 type Attributes = { [k: string]: string | boolean };
 export function h(
   t: string,
@@ -87,13 +88,7 @@ export function html(head: Child | Child[], children: Child | Child[]) {
         ...[head].flat(),
         h("meta", { charset: "utf-8" }),
         h("meta", { name: "viewport", content: "width=device-width" }),
-        h(
-          "style",
-          `
-          ul { padding-left: 16px; }
-          body { background: snow; color: darkslategrey; margin: auto; max-width: 800px;padding: 16px; }
-          `
-        ),
+        h("style", styles),
       ]),
       h("body", [
         h("a", { href: "/", style: "color:blue;" }, h("h1", "threads.garden")),

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "wrangler dev -l",
-    "build": "esbuild ./src/index.ts --target=esnext --format=esm --bundle --minify --outfile=./out/index.mjs"
+    "build": "esbuild ./src/index.ts --target=esnext --format=esm --bundle --minify --outfile=./out/index.mjsloader:.css=text"
   },
   "keywords": [],
   "author": "",
