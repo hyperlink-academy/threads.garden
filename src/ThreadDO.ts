@@ -6,6 +6,8 @@ type ThreadEntry = {
   id: string;
   title: string;
   url: string;
+  approved: boolean | null;
+  date: string;
   submitter: string;
 };
 type Subscriber = { username: string };
@@ -40,15 +42,39 @@ let routes = [
       let id = crypto.randomUUID();
       await state.storage.put<ThreadEntry[]>("entries", [
         ...threads,
-        { title: msg.title, url: msg.url, submitter: msg.owner, id },
+        {
+          title: msg.title,
+          url: msg.url,
+          date: new Date().toISOString(),
+          submitter: msg.owner,
+          id,
+          approved: true,
+        },
       ]);
+      return {};
+    },
+  }),
+  makeRoute({
+    route: "update_entry",
+    handler: async (
+      msg: { entry: string; username: string; approved: boolean },
+      { state }
+    ) => {
+      let owner = await state.storage.get<string>("owner");
+      if (owner !== msg.username) return { approved: false };
+      let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let entryIndex = entries.findIndex((f) => f.id === msg.entry);
+      if (entryIndex === -1) return {};
+      console.log(msg.approved);
+      entries[entryIndex] = { ...entries[entryIndex], approved: msg.approved };
+      await state.storage.put<ThreadEntry[]>("entries", entries);
       return {};
     },
   }),
   makeRoute({
     route: "add_entry",
     handler: async (
-      msg: { url: string; title: string; submitter: string },
+      msg: { url: string; title: string; submitter: string; date: string },
       { state, env }
     ) => {
       let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
@@ -60,6 +86,8 @@ let routes = [
         {
           title: msg.title,
           url: msg.url,
+          date: msg.date,
+          approved: null,
           submitter: msg.submitter,
           id: crypto.randomUUID(),
         },
@@ -83,14 +111,15 @@ let routes = [
   makeRoute({
     route: "get_data",
     handler: async (msg: { username?: string }, { state }) => {
-      let threads = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
       let subscribed = false;
+      let owner = (await state.storage.get<"string">("owner")) as string;
       if (msg.username) {
         let subscribers =
           (await state.storage.get<Subscriber[]>("subscribers")) || [];
         subscribed = !!subscribers.find((f) => f.username === msg.username);
       }
-      return { threads, subscribed };
+      return { entries, subscribed, owner };
     },
   }),
   makeRoute({

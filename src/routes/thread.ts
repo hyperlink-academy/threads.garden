@@ -19,6 +19,7 @@ export const thread_routes: Route[] = [
         username: auth?.username,
       });
       let action = data.subscribed ? "unsubscribe" : "subscribe";
+      let pendingReplies = data.entries.filter((f) => f.approved === null);
 
       return new Response(
         html(
@@ -26,8 +27,54 @@ export const thread_routes: Route[] = [
           [
             h(
               "ul",
-              data.threads.map((e) => h("li", h("a", { href: e.url }, e.title)))
+              data.entries
+                .filter((f) => f.approved === true)
+                .sort((a, b) => (a.date > b.date ? 1 : -1))
+                .map((e) => {
+                  return h("li", [h("a", { href: e.url }, e.title)]);
+                })
             ),
+            auth?.username === data.owner && pendingReplies.length > 0
+              ? h("div", [
+                  h("h3", "Pending Replies"),
+                  h(
+                    "ul",
+                    pendingReplies.map((e) =>
+                      h(
+                        "li",
+                        h(
+                          "div",
+                          {
+                            style: `display: flex; flex-direction: row; gap: 4px;`,
+                          },
+                          [
+                            h("a", { href: e.url }, e.title),
+                            h(
+                              "form",
+                              {
+                                action: `/t/${routeParams.thread}/entry/${e.id}`,
+                                method: "POST",
+                              },
+                              [
+                                h(
+                                  "button",
+                                  { name: "approve", value: "approve" },
+                                  "approve"
+                                ),
+                                h(
+                                  "button",
+                                  { name: "approve", value: "reject" },
+                                  "reject"
+                                ),
+                              ]
+                            ),
+                          ]
+                        )
+                      )
+                    )
+                  ),
+                ])
+              : null,
             auth
               ? h(
                   "form",
@@ -54,6 +101,28 @@ export const thread_routes: Route[] = [
           headers: { "Content-type": "text/html" },
         }
       );
+    },
+  },
+  {
+    method: ["POST"],
+    route: "/t/:thread/entry/:entry",
+    handler: async (request, { routeParams, env }) => {
+      if (!routeParams.thread || !routeParams.entry) return four04();
+      let auth = await verifyRequest(request, env.TOKEN_SECRET);
+      if (!auth) return redirect(`/t/${routeParams.thread}`);
+      let data = await request.formData();
+      let threadStub = env.THREAD.get(
+        env.THREAD.idFromString(routeParams.thread)
+      );
+      console.log(...data.entries());
+
+      await threadDOClient(threadStub, "update_entry", {
+        entry: routeParams.entry,
+        approved: data.get("approve") === "approve",
+        username: auth.username,
+      });
+
+      return redirect(`/t/${routeParams.thread}`);
     },
   },
   {
@@ -95,6 +164,7 @@ export const thread_routes: Route[] = [
         env.THREAD.idFromString(routeParams.thread)
       );
       await threadDOClient(threadStub, "add_entry", {
+        date: new Date().toISOString(),
         url: url.toString(),
         title: title.toString(),
         submitter: auth.username,
