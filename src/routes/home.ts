@@ -29,7 +29,7 @@ export const home_route: Route = {
           head: [h("title", "threads.garden")],
         },
         [
-          h("h1", "Welcome, " + auth.username),
+          h("h3", "Welcome, " + auth.username),
           h("a", { href: "/logout" }, "logout"),
           h(
             "p",
