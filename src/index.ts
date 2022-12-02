@@ -12,8 +12,8 @@ export type Env = {
   THREAD: DurableObjectNamespace;
   POSTMARK_API_TOKEN?: string;
 };
-export { UserDO } from "./UserDO";
 export { ThreadDO } from "./ThreadDO";
+export { UserDO } from "./UserDO";
 export default {
   fetch: (request: Request, env: Env) => {
     return router(request, env);
@@ -36,19 +36,77 @@ let router = Router({
           html(
             [h("title", "threads.garden")],
             [
-              h("p", "this is a little site to make threads on the internet"),
               h(
                 "p",
-                "when you create a thread, people can reply by submitting links"
+                { style: "color: green; padding-left: 3%;" },
+                "—=-_-˜¯-_-≈-"
               ),
-              h("p", "you moderate which links you accept for your thread"),
               h(
                 "p",
-                "you can subscribe to threads and once a day we'll send you an email with any new replies to all threads you subscribe to"
+                { style: "color: forestgreen; padding-left:6%;" },
+                "a small site"
               ),
-              auth
-                ? h("a", { href: "/home" }, "home")
-                : h("a", { href: "/login" }, "login"),
+              h(
+                "p",
+                { style: "color: yellowgreen; padding-left:9%;" },
+                "for making threads"
+              ),
+              h(
+                "p",
+                { style: "color: mediumseagreen; padding-left:12%;" },
+                "on the internet"
+              ),
+              h(
+                "p",
+                { style: "color: green; padding-left:15%;" },
+                "—=-¯˜-≈-_-=≈-_-=—>"
+              ),
+              h(
+                "div",
+                {
+                  style:
+                    "padding: 1em; background: khaki; border-radius: 8px; margin: 0 16% 1em 20%;",
+                },
+                [
+                  h("h2", "start a thread:"),
+                  h("ul", [
+                    h("li", "share a link to something you wrote or made"),
+                    h("li", "others can submit new links to reply"),
+                    h("li", "you moderate which links to add to your thread"),
+                  ]),
+                ]
+              ),
+              h(
+                "div",
+                {
+                  style:
+                    "padding: 1em; background: palegoldenrod; border-radius: 8px; margin: 0 8% 1em 25%;;",
+                },
+                [
+                  h("h2", "subscribe to threads:"),
+                  h("ul", [
+                    h("li", "drop your email for any thread"),
+                    h(
+                      "li",
+                      "get a digest with updates for all threads you follow"
+                    ),
+                    h("li", "just one email a day; unsub any time"),
+                  ]),
+                ]
+              ),
+              h(
+                "div",
+                {
+                  style:
+                    "padding: 1em; background: yellowgreen; border-radius: 8px; margin: 0 0 1em 30%;",
+                },
+                [h("p", "~reply soon — threads close after 7 days!~")]
+              ),
+              h("div", { style: "text-align: right;" }, [
+                auth
+                  ? h("a", { href: "/home" }, "home")
+                  : h("a", { href: "/login" }, "login"),
+              ]),
             ]
           ),
           {

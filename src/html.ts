@@ -91,7 +91,7 @@ export function html(head: Child | Child[], children: Child | Child[]) {
         h("style", styles),
       ]),
       h("body", [
-        h("a", { href: "/", style: "color:blue;" }, h("h1", "threads.garden")),
+        h("a", { href: "/" }, h("h1", "threads.garden")),
         ...[children].flat(),
       ]),
     ])()
