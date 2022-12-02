@@ -25,9 +25,10 @@ export const thread_routes: Route[] = [
         html(
           {
             token: auth,
-            head: h("title", "thread"),
+            head: h("title", "t: " + data.metadata.title),
           },
           [
+            h("h2", data.metadata.title),
             h(
               "ul",
               data.entries
@@ -37,7 +38,7 @@ export const thread_routes: Route[] = [
                   return h("li", [h("a", { href: e.url }, e.title)]);
                 })
             ),
-            auth?.username === data.owner && pendingReplies.length > 0
+            auth?.username === data.metadata.owner && pendingReplies.length > 0
               ? h("div", [
                   h("h3", "Pending Replies"),
                   h(

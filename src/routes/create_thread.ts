@@ -11,13 +11,11 @@ export const create_thread_route: Route = {
     if (!auth) return redirect("/login");
 
     let formData = await request.formData();
-    let url = formData.get("url");
     let title = formData.get("title");
-    if (!url || !title) return new Response("error, no url");
+    if (!title) return new Response("error, no url");
 
     let userDO = env.USER.get(env.USER.idFromName(auth.username));
     let thread = await userDOClient(userDO, "create_thread", {
-      url: url.toString(),
       title: title.toString(),
     });
     if (thread.error)

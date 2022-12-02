@@ -129,7 +129,7 @@ let routes = [
   }),
   makeRoute({
     route: "create_thread",
-    handler: async (msg: { url: string; title: string }, { env, state }) => {
+    handler: async (msg: { title: string }, { env, state }) => {
       let metadata = await state.storage.get<Metadata>("metadata");
       if (!metadata) {
         console.log("Error: called create_thread before authorization");
@@ -139,7 +139,6 @@ let routes = [
       let stub = env.THREAD.get(newThreadID);
       await threadDOClient(stub, "init", {
         owner: metadata.owner,
-        url: msg.url,
         title: msg.title,
       });
 

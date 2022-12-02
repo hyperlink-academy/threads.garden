@@ -11,6 +11,11 @@ type ThreadEntry = {
   submitter: string;
 };
 type Subscriber = { username: string };
+type Metadata = {
+  owner: string;
+  title: string;
+  dateCreated: string;
+};
 
 export class ThreadDO implements DurableObject {
   constructor(
@@ -31,26 +36,14 @@ export class ThreadDO implements DurableObject {
 let routes = [
   makeRoute({
     route: "init",
-    handler: async (
-      msg: { owner: string; url: string; title: string },
-      { state }
-    ) => {
-      let owner = await state.storage.get<string>("owner");
-      if (owner) return {};
-      await state.storage.put<string>("owner", msg.owner);
-      let threads = (await state.storage.get<ThreadEntry[]>("entries")) || [];
-      let id = crypto.randomUUID();
-      await state.storage.put<ThreadEntry[]>("entries", [
-        ...threads,
-        {
-          title: msg.title,
-          url: msg.url,
-          date: new Date().toISOString(),
-          submitter: msg.owner,
-          id,
-          approved: true,
-        },
-      ]);
+    handler: async (msg: { owner: string; title: string }, { state }) => {
+      let metadata = await state.storage.get<Metadata>("metadata");
+      if (metadata) return {};
+      await state.storage.put<Metadata>("metadata", {
+        owner: msg.owner,
+        title: msg.title,
+        dateCreated: new Date().toISOString(),
+      });
       return {};
     },
   }),
@@ -60,8 +53,8 @@ let routes = [
       msg: { entry: string; username: string; approved: boolean },
       { state }
     ) => {
-      let owner = await state.storage.get<string>("owner");
-      if (owner !== msg.username) return { approved: false };
+      let metadata = await state.storage.get<Metadata>("metadata");
+      if (metadata?.owner !== msg.username) return { approved: false };
       let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
       let entryIndex = entries.findIndex((f) => f.id === msg.entry);
       if (entryIndex === -1) return {};
@@ -113,13 +106,15 @@ let routes = [
     handler: async (msg: { username?: string }, { state }) => {
       let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
       let subscribed = false;
-      let owner = (await state.storage.get<"string">("owner")) as string;
+      let metadata = (await state.storage.get<Metadata>(
+        "metadata"
+      )) as Metadata;
       if (msg.username) {
         let subscribers =
           (await state.storage.get<Subscriber[]>("subscribers")) || [];
         subscribed = !!subscribers.find((f) => f.username === msg.username);
       }
-      return { entries, subscribed, owner };
+      return { entries, subscribed, metadata };
     },
   }),
   makeRoute({

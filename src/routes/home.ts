@@ -67,25 +67,20 @@ export const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
         "max-width: 320px; padding: 8px; border: 1px solid; display: flex; flex-direction:column; gap: 4px;",
     },
     [
-      h("div", { style: "display:grid;grid-template-columns: 32px auto;" }, [
-        h("label", { for: "url" }, "url"),
-        h("input", {
-          id: "url",
-          name: "url",
-          type: "url",
-          required: true,
-        }),
-      ]),
-      h("div", { style: "display:grid;grid-template-columns: 32px auto;" }, [
-        h("label", { for: "title" }, "title"),
-        h("input", {
-          required: true,
-          id: "title",
-          name: "title",
-          type: "text",
-          maxlength: "140",
-        }),
-      ]),
+      h(
+        "div",
+        { style: "display:grid;grid-template-columns: 32px auto; gap:8px;" },
+        [
+          h("label", { for: "title" }, "title"),
+          h("input", {
+            required: true,
+            id: "title",
+            name: "title",
+            type: "text",
+            maxlength: "140",
+          }),
+        ]
+      ),
       h("button", props.buttonText),
     ]
   );
