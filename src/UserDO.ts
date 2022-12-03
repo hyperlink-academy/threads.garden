@@ -14,7 +14,6 @@ type InboxEntry = {
   date: string;
   thread: string;
   threadTitle: string;
-  threadURL: string;
   url: string;
   title: string;
 };
@@ -52,7 +51,7 @@ export class UserDO implements DurableObject {
             return h("li", [
               h(
                 "a",
-                { href: `https://threads.garden/t/${thread[0].threadURL}` },
+                { href: `https://threads.garden/t/${thread[0].thread}` },
                 thread[0].threadTitle
               ),
               h(
@@ -77,7 +76,6 @@ let routes = [
         date: string;
         title: string;
         threadTitle: string;
-        threadURL: string;
         url: string;
         thread: string;
       },

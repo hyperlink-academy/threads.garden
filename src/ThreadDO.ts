@@ -58,7 +58,6 @@ let routes = [
       let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
       let entryIndex = entries.findIndex((f) => f.id === msg.entry);
       if (entryIndex === -1) return {};
-      console.log(msg.approved);
       entries[entryIndex] = { ...entries[entryIndex], approved: msg.approved };
       await state.storage.put<ThreadEntry[]>("entries", entries);
       return {};
@@ -71,6 +70,8 @@ let routes = [
       { state, env }
     ) => {
       let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let metadata = await state.storage.get<Metadata>("metadata");
+      if (!metadata) return {};
 
       let subscribers =
         (await state.storage.get<Subscriber[]>("subscribers")) || [];
@@ -90,8 +91,7 @@ let routes = [
       for (let subscriber of subscribers) {
         let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
         await userDOClient(userDO, "add_subscribed_thread_entry", {
-          threadTitle: entries[0].title,
-          threadURL: entries[0].url,
+          threadTitle: metadata?.title,
           date,
           title: msg.title,
           url: msg.url,
