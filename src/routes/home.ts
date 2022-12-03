@@ -46,7 +46,7 @@ export const home_route: Route = {
           data.nextEmail ? h("span", `${hours} hours from now`) : null,
           SubmitLinkForm({
             action: "/create_thread",
-            buttonText: "create a thread",
+            buttonText: "create",
           }),
         ]
       ),
@@ -63,24 +63,16 @@ export const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
     {
       method: "POST",
       action: props.action,
-      style:
-        "max-width: 320px; padding: 8px; border: 1px solid; display: flex; flex-direction:column; gap: 4px;",
     },
     [
-      h(
-        "div",
-        { style: "display:grid;grid-template-columns: 32px auto; gap:8px;" },
-        [
-          h("label", { for: "title" }, "title"),
-          h("input", {
-            required: true,
-            id: "title",
-            name: "title",
-            type: "text",
-            maxlength: "140",
-          }),
-        ]
-      ),
+      h("input", {
+        placeholder: "Thread Title",
+        required: true,
+        id: "title",
+        name: "title",
+        type: "text",
+        maxlength: "140",
+      }),
       h("button", props.buttonText),
     ]
   );

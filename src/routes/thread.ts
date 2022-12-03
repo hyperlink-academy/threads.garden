@@ -3,7 +3,6 @@ import { h, html } from "../html";
 import { Route } from "../router";
 import { threadDOClient } from "../ThreadDO";
 import { four04, redirect } from "../utils";
-import { SubmitLinkForm } from "./home";
 
 export const thread_routes: Route[] = [
   {
@@ -178,3 +177,30 @@ export const thread_routes: Route[] = [
     },
   },
 ];
+
+const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
+  h(
+    "form",
+    {
+      method: "POST",
+      action: props.action,
+    },
+    [
+      h("input", {
+        placeholder: "Thread Title",
+        required: true,
+        id: "title",
+        name: "title",
+        type: "text",
+        maxlength: "140",
+      }),
+      h("input", {
+        placeholder: "Thread URL",
+        required: true,
+        id: "url",
+        name: "url",
+        type: "url",
+      }),
+      h("button", props.buttonText),
+    ]
+  );
