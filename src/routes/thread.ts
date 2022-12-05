@@ -98,24 +98,16 @@ export const thread_routes: Route[] = [
                 .filter((f) => f.approved === true)
                 .sort((a, b) => (a.date > b.date ? 1 : -1))
                 .map((e, index) => {
-                  return h("div", [
+                  return h("li", [
                     h(
-                      "li",
+                      "div",
                       {
-                        style: `background: #f6ef95; padding: 16px; border-radius: 16px; ${
-                          index % 2 == 0
-                            ? "text-align: left; width: calc(100% - 64px);"
-                            : "text-align: right; width: calc(100% - 64px); margin-left: 32px;"
-                        }`,
+                        style: `background: #f6ef95; padding: 16px; border-radius: 16px;`,
                       },
                       [h("a", { href: e.url }, e.title)]
                     ),
                     h("div", {
-                      style: `padding: 64px 0; margin: -32px -16px; ${
-                        index % 2 == 0
-                          ? "border-left: 2px dashed darkgreen; border-radius: 12px 0px 0px 64px;"
-                          : "border-right: 2px dashed darkgreen; border-radius: 0 12px 64px 0;"
-                      }`,
+                      style: `padding: 32px 0; margin: -16px -24px; border-left: 2px dashed darkgreen; border-radius: 24px 0px 0px 24px;`,
                     }),
                   ]);
                 })
@@ -228,9 +220,7 @@ const SubmitLinkForm = (props: {
   h(
     "form",
     {
-      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -32px; width: calc(100% - 64px); ${
-        props.threadcount % 2 == 0 ? "" : "margin-left: 32px;"
-      }`,
+      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -48px;`,
       method: "POST",
       action: props.action,
     },
