@@ -1,7 +1,7 @@
 import { verifyRequest } from "auth";
 import { h, html } from "html";
 import { Route } from "router";
-import { threadDOClient } from "ThreadDO";
+import { threadDOClient, ThreadEntry } from "ThreadDO";
 import { four04 } from "utils";
 
 export const index_route: Route = {
@@ -18,6 +18,7 @@ export const index_route: Route = {
     });
     let action = data.subscribed ? "unsubscribe" : "subscribe";
     let pendingReplies = data.entries.filter((f) => f.approved === null);
+    let isOwner = auth?.username === data.metadata.owner;
 
     return new Response(
       html(
@@ -28,88 +29,32 @@ export const index_route: Route = {
         [
           h("h2", data.metadata.title),
           auth
-            ? h(
-                "form",
-                {
-                  style: "margin: 16px 0;",
-                  action: `/t/${routeParams.thread}/${action}`,
-                  method: "POST",
-                },
-                h(
-                  "button",
-
-                  data.subscribed ? "unsubscribe" : "subscribe"
-                )
-              )
-            : null,
-          auth?.username === data.metadata.owner && pendingReplies.length > 0
-            ? h("div", { style: "margin-bottom: 32px;" }, [
-                h("h3", "Pending Replies"),
-                h(
-                  "ul",
-                  { style: "line-height: 2em;" },
-                  pendingReplies.map((e) =>
-                    h(
-                      "li",
-                      h(
-                        "div",
-                        {
-                          style: `display: flex; flex-direction: row; gap: 4px; justify-content: space-between;`,
-                        },
-                        [
-                          h("a", { href: e.url }, e.title),
-                          h(
-                            "form",
-                            {
-                              action: `/t/${routeParams.thread}/entry/${e.id}`,
-                              method: "POST",
-                            },
-                            [
-                              h(
-                                "button",
-                                { name: "approve", value: "approve" },
-                                "approve"
-                              ),
-                              h(
-                                "button",
-                                { name: "approve", value: "reject" },
-                                "reject"
-                              ),
-                            ]
-                          ),
-                        ]
-                      )
-                    )
-                  )
-                ),
-                h("hr", {
-                  style: "border: 1px green dashed; margin: 64px 0;",
-                }),
-              ])
-            : null,
-          h(
-            "ul",
-            {
-              style: "line-height: 2em; list-style: none; padding: 0 0 32px 0;",
-            },
-            data.entries
-              .filter((f) => f.approved === true)
-              .sort((a, b) => (a.date > b.date ? 1 : -1))
-              .map((e, index) => {
-                return h("li", [
+            ? isOwner
+              ? OwnerPanel({
+                  pendingReplies,
+                  threadID: routeParams.thread,
+                  threadName: data.metadata.title,
+                })
+              : h(
+                  "form",
+                  {
+                    style: "margin: 16px 0;",
+                    action: `/t/${routeParams.thread}/${action}`,
+                    method: "POST",
+                  },
                   h(
-                    "div",
-                    {
-                      style: `background: #fcf3a9; padding: 16px; border-radius: 16px;`,
-                    },
-                    [h("a", { href: e.url }, e.title)]
-                  ),
-                  h("div", {
-                    style: `padding: 32px 0; margin: -16px -24px; border-left: 2px dashed darkgreen; border-radius: 24px 0px 0px 24px;`,
-                  }),
-                ]);
+                    "button",
+
+                    data.subscribed ? "unsubscribe" : "subscribe"
+                  )
+                )
+            : null,
+          isOwner
+            ? h("hr", {
+                style: "border: 1px green dashed; margin: 32px 0;",
               })
-          ),
+            : null,
+          ThreadEntries({ entries: data.entries }),
           !auth
             ? SubmitNonAuth({ threadcount: data.entries.length })
             : SubmitLinkForm({
@@ -124,6 +69,99 @@ export const index_route: Route = {
       }
     );
   },
+};
+
+const OwnerPanel = (props: {
+  pendingReplies: ThreadEntry[];
+  threadName: string;
+  threadID: string;
+}) => {
+  return h("div", { class: "p-4 bg-grey rounded" }, [
+    h(
+      "form",
+      {
+        class: "invalid",
+        action: `/t/${props.threadID}/delete`,
+        method: "POST",
+      },
+      [
+        h("input", {
+          required: true,
+          pattern: props.threadName,
+          placeholder: "Type thread name to delete",
+        }),
+        h("button", { class: "destructive disabled" }, "delete thread"),
+      ]
+    ),
+    props.pendingReplies.length === 0
+      ? null
+      : h("div", { style: "margin-bottom: 32px;" }, [
+          h("h3", "Pending Replies"),
+          h(
+            "ul",
+            { style: "line-height: 2em;" },
+            props.pendingReplies.map((e) =>
+              h(
+                "li",
+                h(
+                  "div",
+                  {
+                    style: `display: flex; flex-direction: row; gap: 4px; justify-content: space-between;`,
+                  },
+                  [
+                    h("a", { href: e.url }, e.title),
+                    h(
+                      "form",
+                      {
+                        action: `/t/${props.threadID}/entry/${e.id}`,
+                        method: "POST",
+                      },
+                      [
+                        h(
+                          "button",
+                          { name: "approve", value: "approve" },
+                          "approve"
+                        ),
+                        h(
+                          "button",
+                          { name: "approve", value: "reject" },
+                          "reject"
+                        ),
+                      ]
+                    ),
+                  ]
+                )
+              )
+            )
+          ),
+        ]),
+  ]);
+};
+
+const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
+  return h(
+    "ul",
+    {
+      style: "line-height: 2em; list-style: none; padding: 0 0 32px 0;",
+    },
+    props.entries
+      .filter((f) => f.approved === true)
+      .sort((a, b) => (a.date > b.date ? 1 : -1))
+      .map((e) => {
+        return h("li", [
+          h(
+            "div",
+            {
+              style: `background: #fcf3a9; padding: 16px; border-radius: 16px;`,
+            },
+            [h("a", { href: e.url }, e.title)]
+          ),
+          h("div", {
+            style: `padding: 32px 0; margin: -16px -24px; border-left: 2px dashed darkgreen; border-radius: 24px 0px 0px 24px;`,
+          }),
+        ]);
+      })
+  );
 };
 
 const SubmitLinkForm = (props: {

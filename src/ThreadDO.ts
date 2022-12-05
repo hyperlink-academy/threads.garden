@@ -2,7 +2,7 @@ import { Env } from ".";
 import { apiRouter, makeAPIClient, makeRoute } from "./api_router";
 import { userDOClient } from "./UserDO";
 
-type ThreadEntry = {
+export type ThreadEntry = {
   id: string;
   title: string;
   url: string;
@@ -144,6 +144,16 @@ let routes = [
           subscribers.filter((f) => f.username !== msg.username)
         );
       }
+      return {};
+    },
+  }),
+  makeRoute({
+    route: "delete",
+    handler: async (msg: { username: string }, { state }) => {
+      let metadata = await state.storage.get<Metadata>("metadata");
+      if (metadata?.owner !== msg.username) return { approved: false };
+      //TODO broadcast to subscribers that things were deleted
+      await state.storage.deleteAll();
       return {};
     },
   }),

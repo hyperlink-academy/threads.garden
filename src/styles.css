@@ -27,6 +27,18 @@ pre {
   padding: initial;
 }
 
+.p-4 {
+  padding: 1rem;
+}
+
+.bg-grey {
+  background-color: #dddddd;
+}
+
+.rounded {
+  border-radius: 1rem;
+}
+
 .flex {
   display: flex;
 }
@@ -59,4 +71,12 @@ button {
   border-radius: 8px;
   border-width: 0;
   cursor: pointer;
+}
+
+.destructive {
+  background-color: red;
+}
+
+form:invalid button.disabled {
+  background-color: grey;
 }

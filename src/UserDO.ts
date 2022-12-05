@@ -154,6 +154,32 @@ let routes = [
       return { threadID: newThreadID.toString() };
     },
   }),
+
+  makeRoute({
+    route: "delete_thread",
+    handler: async (
+      msg: { username: string; threadID: string },
+      { state, env }
+    ) => {
+      let metadata = await state.storage.get<Metadata>("metadata");
+      if (metadata?.owner !== msg.username) return { approved: false };
+
+      let threads = (await state.storage.get<Thread[]>("threads")) || [];
+      let thread = threads.find((t) => t.id === msg.threadID);
+      if (!thread) return {};
+
+      let stub = env.THREAD.get(env.THREAD.idFromString(thread.id));
+      await threadDOClient(stub, "delete", {
+        username: metadata.owner,
+      });
+      await state.storage.put<Thread[]>(
+        "threads",
+        threads.filter((f) => f.id !== msg.threadID)
+      );
+
+      return {};
+    },
+  }),
 ];
 
 function getNextEmailTime() {

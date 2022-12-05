@@ -2,6 +2,7 @@ import { verifyRequest } from "auth";
 import { Route } from "router";
 import { index_route } from "routes/thread/index_route";
 import { threadDOClient } from "ThreadDO";
+import { userDOClient } from "UserDO";
 import { four04, redirect } from "utils";
 
 export const thread_routes: Route[] = [
@@ -25,6 +26,23 @@ export const thread_routes: Route[] = [
       });
 
       return redirect(`/t/${routeParams.thread}`);
+    },
+  },
+  {
+    method: "POST",
+    route: "/t/:thread/delete",
+    handler: async (request, { routeParams, env }) => {
+      if (!routeParams.thread) return four04();
+      let auth = await verifyRequest(request, env.TOKEN_SECRET);
+      if (!auth) return redirect(`/t/${routeParams.thread}`);
+
+      let userDO = env.USER.get(env.USER.idFromName(auth.username));
+      let data = await userDOClient(userDO, "delete_thread", {
+        username: auth.username,
+        threadID: routeParams.thread,
+      });
+
+      return redirect(`/home`);
     },
   },
   {
