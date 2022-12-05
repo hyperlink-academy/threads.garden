@@ -1,6 +1,6 @@
 import { verifyRequest } from "auth";
 import { Route } from "router";
-import { index_route } from "routes/index_route";
+import { index_route } from "routes/thread/index_route";
 import { threadDOClient } from "ThreadDO";
 import { four04, redirect } from "utils";
 
