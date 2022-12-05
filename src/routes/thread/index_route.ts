@@ -100,7 +100,7 @@ export const index_route: Route = {
                   h(
                     "div",
                     {
-                      style: `background: #f6ef95; padding: 16px; border-radius: 16px;`,
+                      style: `background: #fcf3a9; padding: 16px; border-radius: 16px;`,
                     },
                     [h("a", { href: e.url }, e.title)]
                   ),
