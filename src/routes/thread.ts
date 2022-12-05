@@ -28,27 +28,34 @@ export const thread_routes: Route[] = [
           },
           [
             h("h2", data.metadata.title),
-            h(
-              "ul",
-              data.entries
-                .filter((f) => f.approved === true)
-                .sort((a, b) => (a.date > b.date ? 1 : -1))
-                .map((e) => {
-                  return h("li", [h("a", { href: e.url }, e.title)]);
-                })
-            ),
+            auth
+              ? h(
+                  "form",
+                  {
+                    style: "margin: 16px 0;",
+                    action: `/t/${routeParams.thread}/${action}`,
+                    method: data.subscribed ? "DELETE" : "POST",
+                  },
+                  h(
+                    "button",
+
+                    data.subscribed ? "unsubscribe" : "subscribe"
+                  )
+                )
+              : null,
             auth?.username === data.metadata.owner && pendingReplies.length > 0
-              ? h("div", [
+              ? h("div", { style: "margin-bottom: 32px;" }, [
                   h("h3", "Pending Replies"),
                   h(
                     "ul",
+                    { style: "line-height: 2em;" },
                     pendingReplies.map((e) =>
                       h(
                         "li",
                         h(
                           "div",
                           {
-                            style: `display: flex; flex-direction: row; gap: 4px;`,
+                            style: `display: flex; flex-direction: row; gap: 4px; justify-content: space-between;`,
                           },
                           [
                             h("a", { href: e.url }, e.title),
@@ -76,27 +83,49 @@ export const thread_routes: Route[] = [
                       )
                     )
                   ),
+                  h("hr", {
+                    style: "border: 1px green dashed; margin: 64px 0;",
+                  }),
                 ])
               : null,
-            auth
-              ? h(
-                  "form",
-                  {
-                    action: `/t/${routeParams.thread}/${action}`,
-                    method: data.subscribed ? "DELETE" : "POST",
-                  },
-                  h(
-                    "button",
-
-                    data.subscribed ? "unsubscribe" : "subscribe"
-                  )
-                )
-              : null,
+            h(
+              "ul",
+              {
+                style:
+                  "line-height: 2em; list-style: none; padding: 0 0 32px 0;",
+              },
+              data.entries
+                .filter((f) => f.approved === true)
+                .sort((a, b) => (a.date > b.date ? 1 : -1))
+                .map((e, index) => {
+                  return h("div", [
+                    h(
+                      "li",
+                      {
+                        style: `background: #f6ef95; padding: 16px; border-radius: 16px; ${
+                          index % 2 == 0
+                            ? "text-align: left; width: calc(100% - 64px);"
+                            : "text-align: right; width: calc(100% - 64px); margin-left: 32px;"
+                        }`,
+                      },
+                      [h("a", { href: e.url }, e.title)]
+                    ),
+                    h("div", {
+                      style: `padding: 64px 0; margin: -32px -16px; ${
+                        index % 2 == 0
+                          ? "border-left: 2px dashed darkgreen; border-radius: 12px 0px 0px 64px;"
+                          : "border-right: 2px dashed darkgreen; border-radius: 0 12px 64px 0;"
+                      }`,
+                    }),
+                  ]);
+                })
+            ),
             !auth
-              ? null
+              ? SubmitNonAuth({ threadcount: data.entries.length })
               : SubmitLinkForm({
                   action: `/t/${routeParams.thread}/reply`,
                   buttonText: "reply",
+                  threadcount: data.entries.length,
                 }),
           ]
         ),
@@ -178,14 +207,27 @@ export const thread_routes: Route[] = [
   },
 ];
 
-const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
+const SubmitLinkForm = (props: {
+  action: string;
+  buttonText: string;
+  threadcount: number;
+}) =>
   h(
     "form",
     {
+      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -32px; width: calc(100% - 64px); ${
+        props.threadcount % 2 == 0 ? "" : "margin-left: 32px;"
+      }`,
       method: "POST",
       action: props.action,
     },
     [
+      h(
+        "p",
+        { style: "margin: 0 0 12px 0; font-style: italic;" },
+        "add a reply?"
+      ),
+      h("label", { for: "title" }),
       h("input", {
         placeholder: "Thread Title",
         required: true,
@@ -194,6 +236,7 @@ const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
         type: "text",
         maxlength: "140",
       }),
+      h("label", { for: "url" }),
       h("input", {
         placeholder: "Thread URL",
         required: true,
@@ -202,5 +245,22 @@ const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
         type: "url",
       }),
       h("button", props.buttonText),
+    ]
+  );
+
+const SubmitNonAuth = (props: { threadcount: number }) =>
+  h(
+    "div",
+    {
+      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -32px; width: calc(100% - 64px); ${
+        props.threadcount % 2 == 0 ? "" : "margin-left: 32px;"
+      }`,
+    },
+    [
+      h(
+        "p",
+        { style: "margin: 4px 0 8px 0; font-style: italic;" },
+        "please log in to reply to this thread!"
+      ),
     ]
   );
