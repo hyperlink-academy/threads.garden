@@ -34,7 +34,7 @@ export const thread_routes: Route[] = [
                   {
                     style: "margin: 16px 0;",
                     action: `/t/${routeParams.thread}/${action}`,
-                    method: data.subscribed ? "DELETE" : "POST",
+                    method: "POST",
                   },
                   h(
                     "button",
@@ -158,7 +158,7 @@ export const thread_routes: Route[] = [
     },
   },
   {
-    method: ["POST", "DELETE"],
+    method: "POST",
     route: "/t/:thread/subscribe",
     handler: async (request, { routeParams, env }) => {
       if (!routeParams.thread) return four04();
@@ -168,14 +168,27 @@ export const thread_routes: Route[] = [
       let threadStub = env.THREAD.get(
         env.THREAD.idFromString(routeParams.thread)
       );
-      if (request.method === "DELETE")
-        await threadDOClient(threadStub, "unsubscribe", {
-          username: auth.username,
-        });
-      else
-        await threadDOClient(threadStub, "subscribe", {
-          username: auth.username,
-        });
+      await threadDOClient(threadStub, "subscribe", {
+        username: auth.username,
+      });
+
+      return redirect(`/t/${routeParams.thread}`);
+    },
+  },
+  {
+    method: "POST",
+    route: "/t/:thread/unsubscribe",
+    handler: async (request, { routeParams, env }) => {
+      if (!routeParams.thread) return four04();
+      let auth = await verifyRequest(request, env.TOKEN_SECRET);
+      if (!auth) return redirect(`/t/${routeParams.thread}`);
+
+      let threadStub = env.THREAD.get(
+        env.THREAD.idFromString(routeParams.thread)
+      );
+      await threadDOClient(threadStub, "unsubscribe", {
+        username: auth.username,
+      });
 
       return redirect(`/t/${routeParams.thread}`);
     },
@@ -229,7 +242,7 @@ const SubmitLinkForm = (props: {
       ),
       h("label", { for: "title" }),
       h("input", {
-        placeholder: "Thread Title",
+        placeholder: "title",
         required: true,
         id: "title",
         name: "title",
@@ -238,7 +251,7 @@ const SubmitLinkForm = (props: {
       }),
       h("label", { for: "url" }),
       h("input", {
-        placeholder: "Thread URL",
+        placeholder: "url",
         required: true,
         id: "url",
         name: "url",
