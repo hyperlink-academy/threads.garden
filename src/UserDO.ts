@@ -13,7 +13,6 @@ type Thread = {
 type InboxEntry = {
   date: string;
   thread: string;
-  threadTitle: string;
   url: string;
   title: string;
 };
@@ -39,30 +38,32 @@ export class UserDO implements DurableObject {
     let metadata = await this.state.storage.get<Metadata>("metadata");
     if (metadata && inbox.length > 0) {
       let entriesByThreadTitle = inbox.reduce((acc, i) => {
-        acc[i.threadTitle] = [...acc[i.threadTitle], i];
+        if (!acc[i.thread]) acc[i.thread] = [i];
+        else acc[i.thread] = [...acc[i.thread], i];
         return acc;
       }, {} as { [k: string]: InboxEntry[] });
       await sendEmail(
         metadata.owner,
-        `Your threads have ${inbox.length} new responses`,
+        `Your threads have ${inbox.length} new replies`,
         h(
           "ul",
           Object.values(entriesByThreadTitle).map((thread) => {
             return h("li", [
               h(
-                "a",
-                { href: `https://threads.garden/t/${thread[0].thread}` },
-                thread[0].threadTitle
-              ),
-              h(
                 "ul",
                 thread.map((i) => h("li", h("a", { href: i.url }, i.title)))
+              ),
+              h(
+                "a",
+                { href: `https://threads.garden/t/${thread[0].thread}` },
+                "See all"
               ),
             ]);
           })
         )(),
         this.env.POSTMARK_API_TOKEN
       );
+      await this.state.storage.put("inbox", []);
     }
     await this.state.storage.setAlarm(getNextEmailTime());
   }
