@@ -139,10 +139,20 @@ const LoginPage = (props: { incorrect: boolean }) =>
       head: h("title", "threads.garden: login"),
     },
     [
-      h("form", { method: "POST" }, [
+      h("form", { method: "POST", class: "p-4 bg-grey rounded" }, [
+        h(
+          "p",
+          { style: "margin: 0 0 16px 0;" },
+          "enter your email; we'll send you a link to log in!"
+        ),
         h("div", [
-          h("label", { for: "email" }, "email"),
-          h("input", { id: "email", name: "email", type: "email" }),
+          // h("label", { for: "email" }, "email"),
+          h("input", {
+            id: "email",
+            name: "email",
+            type: "email",
+            placeholder: "email",
+          }),
         ]),
         h("button", { type: "submit" }, "login"),
       ]),
