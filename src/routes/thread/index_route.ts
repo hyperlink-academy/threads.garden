@@ -152,12 +152,14 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
           h(
             "div",
             {
-              style: `background: #fcf3a9; padding: 16px; border-radius: 16px;`,
+              style: `background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
+                Math.random() * (32 - -16) + -16
+              )}px`,
             },
             [h("a", { href: e.url }, e.title)]
           ),
           h("div", {
-            style: `padding: 32px 0; margin: -16px -24px; border-left: 2px dashed darkgreen; border-radius: 24px 0px 0px 24px;`,
+            style: `padding: 32px 0; margin: -16px -16px; border-left: 2px dashed darkgreen; border-radius: 24px 0px 0px 24px;`,
           }),
         ]);
       })
