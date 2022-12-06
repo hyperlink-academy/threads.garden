@@ -140,24 +140,24 @@ const OwnerPanel = (props: {
 };
 
 const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
-  console.log(props.entries);
-
   return h(
     "ul",
     {
-      style: "line-height: 2em; list-style: none; padding: 0 0 32px 0;",
+      style: "line-height: 2em; list-style: none; padding: 0 0 28px 0;",
     },
     props.entries
       .filter((f) => f.approved === true)
       .sort((a, b) => (a.date > b.date ? 1 : -1))
-      .map((e) => {
+      .map((e, index) => {
         return h("li", [
           h(
             "div",
             {
               style: `display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
                 Math.random() * (32 - -16) + -16
-              )}px`,
+              )}px; margin-left: ${Math.floor(
+                Math.random() * (32 - -16) + -16
+              )}px;`,
             },
             [
               h("a", { href: e.url }, e.title),
@@ -196,7 +196,15 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
             ]
           ),
           h("div", {
-            style: `padding: 32px 0; margin: -16px -16px; border-left: 2px dashed darkgreen; border-radius: 24px 0px 0px 24px;`,
+            style: `padding: 16px 0; ${
+              index % 2 == 0
+                ? `margin-left: 50%; border-left: 2px dashed darkgreen; border-radius: ${Math.floor(
+                    Math.random() * (16 - 4) + 4
+                  )}px 0 0 ${Math.floor(Math.random() * (16 - 4) + 4)}px;`
+                : `margin-right: 50%; border-right: 2px dashed darkgreen; border-radius: 0 ${Math.floor(
+                    Math.random() * (16 - 4) + 4
+                  )}px ${Math.floor(Math.random() * (16 - 4) + 4)}px 0;`
+            }`,
           }),
         ]);
       })
