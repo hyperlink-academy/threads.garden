@@ -19,6 +19,10 @@ body {
   line-height: 1.6em;
 }
 
+.body-wrapper {
+  min-height: 84vh;
+}
+
 a {
   color: green;
 }
@@ -79,4 +83,11 @@ button {
 
 form:invalid button.disabled {
   background-color: grey;
+}
+
+footer {
+  padding: 8px;
+  margin-top: 32px;
+  font-size: 0.8em;
+  border-top: dashed;
 }

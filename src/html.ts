@@ -92,23 +92,36 @@ export function html(
         ...[props.head].flat(),
         h("meta", { charset: "utf-8" }),
         h("meta", { name: "viewport", content: "width=device-width" }),
+        h("meta", {
+          name: "description",
+          content:
+            "threads.garden - a small site for making threads on the internet",
+        }),
         h("style", styles),
       ]),
       h("body", [
-        h("div", { class: "flex flex-row gap-2 space-between" }, [
-          h("a", { href: "/" }, h("h1", "threads.garden")),
+        h("div", { class: "body-wrapper" }, [
+          h("div", { class: "flex flex-row gap-2 space-between" }, [
+            h("a", { href: "/" }, h("h1", "threads.garden")),
 
-          h(
-            "div",
-            { style: "text-align: right;", class: "align-self-center" },
-            [
-              props.token
-                ? h("a", { href: "/home" }, "home")
-                : h("a", { href: "/login" }, "login"),
-            ]
-          ),
+            h(
+              "div",
+              { style: "text-align: right;", class: "align-self-center" },
+              [
+                props.token
+                  ? h("a", { href: "/home" }, "home")
+                  : h("a", { href: "/login" }, "login"),
+              ]
+            ),
+          ]),
+          ...[children].flat(),
         ]),
-        ...[children].flat(),
+        h("footer", [
+          h("p", [
+            "a project by ",
+            h("a", { href: "https://hyperlink.academy" }, "hyperlink.academy"),
+          ]),
+        ]),
       ]),
     ])()
   );
