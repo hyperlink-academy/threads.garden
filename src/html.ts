@@ -117,7 +117,8 @@ export function html(
           ...[children].flat(),
         ]),
         h("footer", [
-          h("p", [
+          h("hr"),
+          h("p", { style: "margin: -4px 0 18px 0" }, [
             "a project by ",
             h("a", { href: "https://hyperlink.academy" }, "hyperlink.academy"),
           ]),

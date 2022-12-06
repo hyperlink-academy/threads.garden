@@ -49,11 +49,7 @@ export const index_route: Route = {
                   )
                 )
             : null,
-          isOwner
-            ? h("hr", {
-                style: "border: 1px green dashed; margin: 32px 0;",
-              })
-            : null,
+          isOwner ? h("hr") : null,
           ThreadEntries({ entries: data.entries }),
           !auth
             ? SubmitNonAuth({ threadcount: data.entries.length })

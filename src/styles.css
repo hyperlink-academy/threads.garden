@@ -86,8 +86,10 @@ form:invalid button.disabled {
 }
 
 footer {
-  padding: 8px;
-  margin-top: 32px;
   font-size: 0.8em;
-  border-top: dashed;
+}
+
+hr {
+  border: 1px green dashed;
+  margin: 32px 0;
 }
