@@ -104,8 +104,12 @@ let routes = [
       if (data.token !== msg.token || Date.now() - data.ts > 1000 * 60 * 30)
         return { valid: false };
       state.storage.delete("login-token");
-      state.storage.put<Metadata>("metadata", { owner: msg.owner });
-      return { valid: true };
+      let metadata = await state.storage.get<Metadata>("metadata");
+      state.storage.put<Metadata>("metadata", {
+        ...metadata,
+        owner: msg.owner,
+      });
+      return { valid: true, metadata };
     },
   }),
   makeRoute({

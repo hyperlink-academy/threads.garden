@@ -1,6 +1,10 @@
 import { parse, serialize } from "./cookies";
 
-export type Token = { username: string };
+export type Token = {
+  username: string;
+  display_name?: string;
+  homepage?: string;
+};
 
 let authTokenCookie = "X-Threads-Token";
 let authSignatureCookie = "X-Threads-Signature";

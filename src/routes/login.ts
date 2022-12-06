@@ -79,7 +79,15 @@ export const LoginRoutes: Route[] = [
 
       if (loginToken.valid) {
         let headers = new Headers();
-        await addTokenHeaders({ username: email }, headers, env.TOKEN_SECRET);
+        await addTokenHeaders(
+          {
+            username: email,
+            display_name: loginToken.metadata?.display_name,
+            homepage: loginToken.metadata?.homepage,
+          },
+          headers,
+          env.TOKEN_SECRET
+        );
         return redirect("/home", headers);
       } else
         return new Response(
@@ -92,7 +100,6 @@ export const LoginRoutes: Route[] = [
           ),
           { headers: { "Content-type": "text/html" } }
         );
-      return new Response("");
     },
   },
   {

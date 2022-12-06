@@ -8,7 +8,7 @@ export type ThreadEntry = {
   url: string;
   approved: boolean | null;
   date: string;
-  submitter: string;
+  submitter: { username: string; display_name?: string; homepage?: string };
 };
 type Subscriber = { username: string };
 type Metadata = {
@@ -99,7 +99,16 @@ let routes = [
   makeRoute({
     route: "add_entry",
     handler: async (
-      msg: { url: string; title: string; submitter: string; date: string },
+      msg: {
+        url: string;
+        title: string;
+        submitter: {
+          username: string;
+          display_name?: string;
+          homepage?: string;
+        };
+        date: string;
+      },
       { state }
     ) => {
       let pending_entries =

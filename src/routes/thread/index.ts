@@ -100,7 +100,7 @@ export const thread_routes: Route[] = [
         date: new Date().toISOString(),
         url: url.toString(),
         title: title.toString(),
-        submitter: auth.username,
+        submitter: auth,
       });
 
       return redirect(`/t/${routeParams.thread}`);
