@@ -1,3 +1,4 @@
+import { update_user_route } from "routes/update_user";
 import { Router } from "./router";
 import { create_thread_route } from "./routes/create_thread";
 import { home_route } from "./routes/home";
@@ -23,6 +24,7 @@ let router = Router({
   base: "",
   routes: [
     create_thread_route,
+    update_user_route,
     home_route,
     index_route,
     ...thread_routes,

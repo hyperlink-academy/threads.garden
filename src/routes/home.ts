@@ -16,12 +16,6 @@ export const home_route: Route = {
 
     let userDO = env.USER.get(env.USER.idFromName(auth.username));
     let data = await userDOClient(userDO, "get_data", {});
-    let hours = 0;
-    if (data.nextEmail) {
-      hours = Math.floor(
-        (new Date(data.nextEmail).getTime() - Date.now()) / (1000 * 60 * 60)
-      );
-    }
     return new Response(
       html(
         {
@@ -29,8 +23,23 @@ export const home_route: Route = {
           head: [h("title", "threads.garden")],
         },
         [
-          h("h3", "Welcome, " + auth.username),
+          h("h3", [
+            "Welcome, ",
+            data.metadata?.display_name
+              ? data.metadata?.homepage
+                ? h(
+                    "a",
+                    { href: data.metadata.homepage },
+                    data.metadata.display_name
+                  )
+                : data.metadata?.display_name
+              : auth.username,
+          ]),
           h("a", { href: "/logout" }, "logout"),
+          SetNameForm({
+            display_name: data.metadata?.display_name || "",
+            homepage: data.metadata?.homepage || "",
+          }),
           h(
             "p",
             "this is your homepage, it should have a list of stuff. If you aren't logged in, redirect"
@@ -43,7 +52,6 @@ export const home_route: Route = {
                   h("li", h("a", { href: `/t/${t.id}` }, t.title))
                 )
               ),
-          data.nextEmail ? h("span", `${hours} hours from now`) : null,
           SubmitLinkForm({
             action: "/create_thread",
             buttonText: "create",
@@ -55,6 +63,28 @@ export const home_route: Route = {
       }
     );
   },
+};
+
+const SetNameForm = (props: { display_name: string; homepage: string }) => {
+  console.log(props);
+  return h("form", { method: "POST", action: "/update_user" }, [
+    h("input", {
+      placeholder: "display name",
+      id: "display_name",
+      name: "display_name",
+      value: props.display_name,
+      type: "text",
+      maxlength: "32",
+    }),
+    h("input", {
+      placeholder: "homepage",
+      value: props.homepage,
+      id: "homepage",
+      name: "homepage",
+      type: "url",
+    }),
+    h("button", "Update display name"),
+  ]);
 };
 
 export const SubmitLinkForm = (props: { action: string; buttonText: string }) =>

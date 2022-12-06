@@ -18,7 +18,7 @@ type InboxEntry = {
   title: string;
 };
 
-type Metadata = { owner: string };
+type Metadata = { owner: string; display_name?: string; homepage?: string };
 
 export class UserDO implements DurableObject {
   constructor(
@@ -90,8 +90,7 @@ let routes = [
       let alarm = await state.storage.getAlarm();
       if (!alarm) {
         let date = getNextEmailTime();
-        console.log(date.toISOString());
-        console.log(await state.storage.setAlarm(date));
+        await state.storage.setAlarm(date);
       }
       return {};
     },
@@ -120,14 +119,32 @@ let routes = [
       return { token };
     },
   }),
-
+  makeRoute({
+    route: "update_user_data",
+    handler: async (
+      msg: { display_name?: string; homepage?: string; username: string },
+      { state }
+    ) => {
+      let metadata = await state.storage.get<Metadata>("metadata");
+      console.log(metadata, msg);
+      if (!metadata || metadata.owner !== msg.username)
+        return { error: "no metadata or wrong user" };
+      await state.storage.put<Metadata>("metadata", {
+        ...metadata,
+        display_name: msg.display_name,
+        homepage: msg.homepage,
+      });
+      return {};
+    },
+  }),
   makeRoute({
     route: "get_data",
     handler: async (_msg: {}, { state }) => {
       let threads = (await state.storage.get<Thread[]>("threads")) || [];
       let nextDO = await state.storage.getAlarm();
       let inbox = (await state.storage.get<InboxEntry[]>("inbox")) || [];
-      return { threads, nextEmail: nextDO, inbox };
+      let metadata = await state.storage.get<Metadata>("metadata");
+      return { threads, nextEmail: nextDO, inbox, metadata };
     },
   }),
   makeRoute({
