@@ -31,7 +31,7 @@ export const index_route: Route = {
           auth
             ? isOwner
               ? OwnerPanel({
-                  pendingReplies,
+                  pendingReplies: data.pending_entries,
                   threadID: routeParams.thread,
                   threadName: data.metadata.title,
                 })

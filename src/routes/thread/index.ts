@@ -19,7 +19,7 @@ export const thread_routes: Route[] = [
         env.THREAD.idFromString(routeParams.thread)
       );
 
-      await threadDOClient(threadStub, "update_entry", {
+      await threadDOClient(threadStub, "update_pending_entry", {
         entry: routeParams.entry,
         approved: data.get("approve") === "approve",
         username: auth.username,

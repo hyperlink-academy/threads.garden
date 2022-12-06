@@ -48,18 +48,46 @@ let routes = [
     },
   }),
   makeRoute({
-    route: "update_entry",
+    route: "update_pending_entry",
     handler: async (
       msg: { entry: string; username: string; approved: boolean },
-      { state }
+      { state, env }
     ) => {
       let metadata = await state.storage.get<Metadata>("metadata");
       if (metadata?.owner !== msg.username) return { approved: false };
-      let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
-      let entryIndex = entries.findIndex((f) => f.id === msg.entry);
+      let pending_entries =
+        (await state.storage.get<ThreadEntry[]>("pending_entries")) || [];
+      let entryIndex = pending_entries.findIndex((f) => f.id === msg.entry);
       if (entryIndex === -1) return {};
-      entries[entryIndex] = { ...entries[entryIndex], approved: msg.approved };
-      await state.storage.put<ThreadEntry[]>("entries", entries);
+
+      let subscribers =
+        (await state.storage.get<Subscriber[]>("subscribers")) || [];
+      let entry = pending_entries[entryIndex];
+
+      if (msg.approved) {
+        let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+        await state.storage.put<ThreadEntry[]>("entries", [
+          ...entries,
+          { ...entry, approved: true },
+        ]);
+        let date = new Date().toISOString();
+        for (let subscriber of subscribers) {
+          let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
+          await userDOClient(userDO, "add_subscribed_thread_entry", {
+            threadTitle: metadata?.title,
+            date,
+            title: entry.title,
+            url: entry.url,
+            thread: state.id.toString(),
+          });
+        }
+      }
+
+      await state.storage.put<ThreadEntry[]>(
+        "pending_entries",
+        pending_entries.filter((_, index) => index !== entryIndex)
+      );
+
       return {};
     },
   }),
@@ -67,16 +95,15 @@ let routes = [
     route: "add_entry",
     handler: async (
       msg: { url: string; title: string; submitter: string; date: string },
-      { state, env }
+      { state }
     ) => {
-      let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let pending_entries =
+        (await state.storage.get<ThreadEntry[]>("pending_entries")) || [];
       let metadata = await state.storage.get<Metadata>("metadata");
       if (!metadata) return {};
 
-      let subscribers =
-        (await state.storage.get<Subscriber[]>("subscribers")) || [];
       let newEntries = [
-        ...entries,
+        ...pending_entries,
         {
           title: msg.title,
           url: msg.url,
@@ -86,18 +113,7 @@ let routes = [
           id: crypto.randomUUID(),
         },
       ];
-      await state.storage.put<ThreadEntry[]>("entries", newEntries);
-      let date = new Date().toISOString();
-      for (let subscriber of subscribers) {
-        let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
-        await userDOClient(userDO, "add_subscribed_thread_entry", {
-          threadTitle: metadata?.title,
-          date,
-          title: msg.title,
-          url: msg.url,
-          thread: state.id.toString(),
-        });
-      }
+      await state.storage.put<ThreadEntry[]>("pending_entries", newEntries);
       return { entries: newEntries };
     },
   }),
@@ -105,6 +121,8 @@ let routes = [
     route: "get_data",
     handler: async (msg: { username?: string }, { state }) => {
       let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      let pending_entries =
+        (await state.storage.get<ThreadEntry[]>("pending_entries")) || [];
       let subscribed = false;
       let metadata = (await state.storage.get<Metadata>(
         "metadata"
@@ -114,7 +132,7 @@ let routes = [
           (await state.storage.get<Subscriber[]>("subscribers")) || [];
         subscribed = !!subscribers.find((f) => f.username === msg.username);
       }
-      return { entries, subscribed, metadata };
+      return { entries, subscribed, metadata, pending_entries };
     },
   }),
   makeRoute({
