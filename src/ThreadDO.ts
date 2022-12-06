@@ -39,6 +39,11 @@ let routes = [
     handler: async (msg: { owner: string; title: string }, { state }) => {
       let metadata = await state.storage.get<Metadata>("metadata");
       if (metadata) return {};
+
+      await state.storage.put<Subscriber[]>("subscribers", [
+        { username: msg.owner },
+      ]);
+
       await state.storage.put<Metadata>("metadata", {
         owner: msg.owner,
         title: msg.title,
