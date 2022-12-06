@@ -13,6 +13,7 @@ type Thread = {
 type InboxEntry = {
   date: string;
   thread: string;
+  threadTitle: string;
   url: string;
   title: string;
 };
@@ -50,13 +51,13 @@ export class UserDO implements DurableObject {
           Object.values(entriesByThreadTitle).map((thread) => {
             return h("li", [
               h(
-                "ul",
-                thread.map((i) => h("li", h("a", { href: i.url }, i.title)))
-              ),
-              h(
                 "a",
                 { href: `https://threads.garden/t/${thread[0].thread}` },
-                "See all"
+                thread[0].threadTitle
+              ),
+              h(
+                "ul",
+                thread.map((i) => h("li", h("a", { href: i.url }, i.title)))
               ),
             ]);
           })
@@ -123,7 +124,8 @@ let routes = [
     handler: async (_msg: {}, { state }) => {
       let threads = (await state.storage.get<Thread[]>("threads")) || [];
       let nextDO = await state.storage.getAlarm();
-      return { threads, nextEmail: nextDO };
+      let inbox = (await state.storage.get<InboxEntry[]>("inbox")) || [];
+      return { threads, nextEmail: nextDO, inbox };
     },
   }),
   makeRoute({

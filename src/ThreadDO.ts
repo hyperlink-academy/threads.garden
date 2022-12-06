@@ -79,7 +79,7 @@ let routes = [
         for (let subscriber of subscribers) {
           let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
           await userDOClient(userDO, "add_subscribed_thread_entry", {
-            threadTitle: metadata?.title,
+            threadTitle: metadata.title,
             date,
             title: entry.title,
             url: entry.url,
