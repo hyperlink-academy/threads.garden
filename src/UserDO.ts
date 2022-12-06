@@ -45,7 +45,9 @@ export class UserDO implements DurableObject {
       }, {} as { [k: string]: InboxEntry[] });
       await sendEmail(
         metadata.owner,
-        `Your threads have ${inbox.length} new replies`,
+        `threads.garden: ${inbox.length} new thread ${
+          inbox.length > 1 ? "replies" : "reply"
+        }`,
         h(
           "ul",
           Object.values(entriesByThreadTitle).map((thread) => {
