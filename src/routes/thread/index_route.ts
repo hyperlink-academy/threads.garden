@@ -139,6 +139,8 @@ const OwnerPanel = (props: {
 };
 
 const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
+  console.log(props.entries);
+
   return h(
     "ul",
     {
@@ -152,23 +154,43 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
           h(
             "div",
             {
-              style: `background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
+              style: `display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
                 Math.random() * (32 - -16) + -16
               )}px`,
             },
             [
               h("a", { href: e.url }, e.title),
-              h("p", [
-                "- ",
-                !e.submitter.display_name
-                  ? "Anonymous"
-                  : !e.submitter.homepage
-                  ? e.submitter.display_name
-                  : h(
-                      "a",
-                      { href: e.submitter.homepage },
-                      e.submitter.display_name
-                    ),
+              h("div", [
+                h(
+                  "p",
+                  {
+                    style:
+                      "margin: 0; line-height: 2em; font-size: 0.84em; font-style: italic;",
+                  },
+                  [
+                    !e.submitter.display_name
+                      ? "anonymous"
+                      : !e.submitter.homepage
+                      ? e.submitter.display_name
+                      : h(
+                          "a",
+                          { href: e.submitter.homepage },
+                          e.submitter.display_name
+                        ),
+                  ]
+                ),
+                h(
+                  "p",
+                  {
+                    style:
+                      "margin: 0; line-height: 2em; font-size: 0.72em; font-style: italic; color: #867012;",
+                  },
+                  new Date(e.date).toLocaleString(undefined, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                    // dayPeriod: "short",
+                  })
+                ),
               ]),
             ]
           ),
