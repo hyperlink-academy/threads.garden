@@ -76,66 +76,71 @@ const OwnerPanel = (props: {
   threadName: string;
   threadID: string;
 }) => {
-  return h("div", { class: "p-4 bg-grey rounded" }, [
-    h(
-      "form",
-      {
-        class: "invalid",
-        action: `/t/${props.threadID}/delete`,
-        method: "POST",
-      },
-      [
-        h("input", {
-          required: true,
-          pattern: props.threadName,
-          placeholder: "Type thread name to delete",
-        }),
-        h("button", { class: "destructive disabled" }, "delete thread"),
-      ]
-    ),
-    props.pendingReplies.length === 0
-      ? null
-      : h("div", { style: "margin-bottom: 32px;" }, [
-          h("h3", "Pending Replies"),
-          h(
-            "ul",
-            { style: "line-height: 2em;" },
-            props.pendingReplies.map((e) =>
-              h(
-                "li",
+  return h(
+    "div",
+    { class: "p-4 bg-grey rounded", style: "padding-bottom: 8px;" },
+    [
+      h(
+        "form",
+        {
+          class: "invalid",
+          action: `/t/${props.threadID}/delete`,
+          method: "POST",
+        },
+        [
+          h("input", {
+            style: "min-width: 160px;",
+            required: true,
+            pattern: props.threadName,
+            placeholder: "type thread name to delete",
+          }),
+          h("button", { class: "destructive disabled" }, "delete thread"),
+        ]
+      ),
+      props.pendingReplies.length === 0
+        ? null
+        : h("div", { style: "margin-bottom: 32px;" }, [
+            h("h3", "Pending Replies"),
+            h(
+              "ul",
+              { style: "line-height: 2em;" },
+              props.pendingReplies.map((e) =>
                 h(
-                  "div",
-                  {
-                    style: `display: flex; flex-direction: row; gap: 4px; justify-content: space-between;`,
-                  },
-                  [
-                    h("a", { href: e.url }, e.title),
-                    h(
-                      "form",
-                      {
-                        action: `/t/${props.threadID}/entry/${e.id}`,
-                        method: "POST",
-                      },
-                      [
-                        h(
-                          "button",
-                          { name: "approve", value: "approve" },
-                          "approve"
-                        ),
-                        h(
-                          "button",
-                          { name: "approve", value: "reject" },
-                          "reject"
-                        ),
-                      ]
-                    ),
-                  ]
+                  "li",
+                  h(
+                    "div",
+                    {
+                      style: `display: flex; flex-direction: row; gap: 4px; justify-content: space-between;`,
+                    },
+                    [
+                      h("a", { href: e.url }, e.title),
+                      h(
+                        "form",
+                        {
+                          action: `/t/${props.threadID}/entry/${e.id}`,
+                          method: "POST",
+                        },
+                        [
+                          h(
+                            "button",
+                            { name: "approve", value: "approve" },
+                            "approve"
+                          ),
+                          h(
+                            "button",
+                            { name: "approve", value: "reject" },
+                            "reject"
+                          ),
+                        ]
+                      ),
+                    ]
+                  )
                 )
               )
-            )
-          ),
-        ]),
-  ]);
+            ),
+          ]),
+    ]
+  );
 };
 
 const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
