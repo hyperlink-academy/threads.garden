@@ -209,9 +209,7 @@ const SubmitNonAuth = (props: { threadcount: number }) =>
   h(
     "div",
     {
-      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -32px; width: calc(100% - 64px); ${
-        props.threadcount % 2 == 0 ? "" : "margin-left: 32px;"
-      }`,
+      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -48px;`,
     },
     [
       h(
