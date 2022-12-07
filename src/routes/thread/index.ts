@@ -56,8 +56,15 @@ export const thread_routes: Route[] = [
       let threadStub = env.THREAD.get(
         env.THREAD.idFromString(routeParams.thread)
       );
+      let userDO = env.USER.get(env.USER.idFromName(auth.username));
       await threadDOClient(threadStub, "subscribe", {
         username: auth.username,
+      });
+      let data = await threadDOClient(threadStub, "get_metadata", {});
+      await userDOClient(userDO, "add_subscription", {
+        username: auth.username,
+        threadID: routeParams.thread,
+        threadTitle: data.metadata.title,
       });
 
       return redirect(`/t/${routeParams.thread}`);

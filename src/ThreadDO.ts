@@ -150,6 +150,15 @@ let routes = [
     },
   }),
   makeRoute({
+    route: "get_metadata",
+    handler: async (_msg: {}, { state }) => {
+      let metadata = (await state.storage.get<Metadata>(
+        "metadata"
+      )) as Metadata;
+      return { metadata };
+    },
+  }),
+  makeRoute({
     route: "subscribe",
     handler: async (msg: { username: string }, { state }) => {
       let subscribers =

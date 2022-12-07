@@ -23,34 +23,7 @@ export const home_route: Route = {
           head: [h("title", "threads.garden")],
         },
         [
-          h("details", { class: "p-4 bg-grey rounded" }, [
-            h(
-              "summary",
-              {
-                style: "font-size: 1.2em; line-height: 2em; font-weight: bold;",
-              },
-              [
-                "Welcome, ",
-                data.metadata?.display_name
-                  ? data.metadata?.homepage
-                    ? h(
-                        "a",
-                        { href: data.metadata.homepage },
-                        data.metadata.display_name
-                      )
-                    : data.metadata?.display_name
-                  : auth.username,
-                " 🌱",
-              ]
-            ),
-            h("div", { style: "margin-bottom: 8px;" }, [
-              h("a", { href: "/logout" }, "logout"),
-            ]),
-            SetNameForm({
-              display_name: data.metadata?.display_name || "",
-              homepage: data.metadata?.homepage || "",
-            }),
-          ]),
+          Settings({ ...data.metadata, username: auth.username }),
           h(
             "p",
             { style: "font-size: 0.9em; padding: 16px 0;" },
@@ -70,6 +43,16 @@ export const home_route: Route = {
             action: "/create_thread",
             buttonText: "create",
           }),
+          h("h3", "Threads: Subscribed"),
+          data.subscriptions.length === 0
+            ? null
+            : h(
+                "ul",
+                { style: "line-height: 2em;" },
+                data.subscriptions.map((t) =>
+                  h("li", h("a", { href: `/t/${t.threadID}` }, t.threadTitle))
+                )
+              ),
           h(
             "p",
             { style: "font-size: 0.9em; padding: 16px 0;" },
@@ -82,6 +65,37 @@ export const home_route: Route = {
       }
     );
   },
+};
+
+const Settings = (props: {
+  display_name?: string;
+  homepage?: string;
+  username: string;
+}) => {
+  return h("details", { class: "p-4 bg-grey rounded" }, [
+    h(
+      "summary",
+      {
+        style: "font-size: 1.2em; line-height: 2em; font-weight: bold;",
+      },
+      [
+        "Welcome, ",
+        props.display_name
+          ? props.homepage
+            ? h("a", { href: props.homepage }, props.display_name)
+            : props.display_name
+          : props.username,
+        " 🌱",
+      ]
+    ),
+    h("div", { style: "margin-bottom: 8px;" }, [
+      h("a", { href: "/logout" }, "logout"),
+    ]),
+    SetNameForm({
+      display_name: props.display_name || "",
+      homepage: props.homepage || "",
+    }),
+  ]);
 };
 
 const SetNameForm = (props: { display_name: string; homepage: string }) => {
