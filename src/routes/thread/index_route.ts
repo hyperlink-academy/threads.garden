@@ -50,7 +50,7 @@ export const index_route: Route = {
               ),
           auth
             ? isOwner
-              ? OwnerPanel({
+              ? h(OwnerPanel, {
                   threadID: routeParams.thread,
                   threadName: data.metadata.title,
                 })
@@ -69,12 +69,12 @@ export const index_route: Route = {
                 )
             : null,
           isOwner ? h("hr") : null,
-          ThreadEntries({ entries: data.entries }),
+          h(ThreadEntries, { entries: data.entries }),
           over
             ? null
             : !auth
-            ? SubmitNonAuth({ threadcount: data.entries.length })
-            : SubmitLinkForm({
+            ? h(SubmitNonAuth, { threadcount: data.entries.length })
+            : h(SubmitLinkForm, {
                 action: `/t/${routeParams.thread}/reply`,
                 buttonText: "reply",
                 threadcount: data.entries.length,

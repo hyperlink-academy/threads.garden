@@ -2,9 +2,10 @@ export type Child = string | (() => string) | null;
 import { Token } from "auth";
 import styles from "./styles.css";
 type Attributes = { [k: string]: string | boolean };
-export function h(
-  t: string,
-  attrsOrChildren?: Attributes | Child | Child[],
+
+export function h<Props>(
+  t: string | ((props: Props) => () => string),
+  attrsOrChildren?: Props | Child | Child[],
   _children?: Child | Child[]
 ) {
   let attrs: Attributes = {};
@@ -16,7 +17,8 @@ export function h(
     !Array.isArray(attrsOrChildren)
   )
     attrs = attrsOrChildren;
-  else children = attrsOrChildren;
+  else children = attrsOrChildren as Child | Child[];
+  if (typeof t === "function") return t({ ...attrs, children } as Props);
   return () =>
     `<${t} ${renderAttributes(attrs)}> 
     ${children ? renderChildren(children) : ""}

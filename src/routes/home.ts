@@ -23,7 +23,7 @@ export const home_route: Route = {
           head: [h("title", "threads.garden")],
         },
         [
-          Settings({ ...data.metadata, username: auth.username }),
+          h(Settings, { ...data.metadata, username: auth.username }),
           h(
             "p",
             { style: "font-size: 0.9em; padding: 16px 0;" },
@@ -39,7 +39,7 @@ export const home_route: Route = {
                   h("li", h("a", { href: `/t/${t.id}` }, t.title))
                 )
               ),
-          SubmitLinkForm({
+          h(SubmitLinkForm, {
             action: "/create_thread",
             buttonText: "create",
           }),
@@ -91,7 +91,7 @@ const Settings = (props: {
     h("div", { style: "margin-bottom: 8px;" }, [
       h("a", { href: "/logout" }, "logout"),
     ]),
-    SetNameForm({
+    h(SetNameForm, {
       display_name: props.display_name || "",
       homepage: props.homepage || "",
     }),
