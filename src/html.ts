@@ -104,16 +104,16 @@ export function html(
       h("body", [
         h("div", { class: "body-wrapper" }, [
           h("div", { class: "flex flex-row gap-2 space-between" }, [
-            h("a", { href: "/" }, h("h1", "threads.garden")),
+            h(
+              "a",
+              { href: props.token ? "/home" : "/" },
+              h("h1", "threads.garden")
+            ),
 
             h(
               "div",
               { style: "text-align: right;", class: "align-self-center" },
-              [
-                props.token
-                  ? h("a", { href: "/home" }, "home")
-                  : h("a", { href: "/login" }, "login"),
-              ]
+              [props.token ? null : h("a", { href: "/login" }, "login")]
             ),
           ]),
           ...[children].flat(),
