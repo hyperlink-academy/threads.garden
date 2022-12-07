@@ -19,6 +19,8 @@ export const index_route: Route = {
     let action = data.subscribed ? "unsubscribe" : "subscribe";
     let isOwner = auth?.username === data.metadata.owner;
 
+    let timePassed = Date.now() - new Date(data.metadata.dateCreated).getTime();
+    let over = timePassed > 7 * 24 * 60 * 60 * 1000;
     return new Response(
       html(
         {
@@ -26,7 +28,26 @@ export const index_route: Route = {
           head: h("title", "t: " + data.metadata.title),
         },
         [
-          h("h2", data.metadata.title),
+          h("div", { class: "flex flex-row gap-2" }, [
+            h("h2", data.metadata.title),
+            h(
+              "p",
+              { class: "align-self-center" },
+              new Date(data.metadata.dateCreated).toLocaleString(undefined, {
+                dateStyle: "short",
+                // timeStyle: "short",
+                // dayPeriod: "short",
+              })
+            ),
+          ]),
+          over
+            ? h("p", "thread closed")
+            : h(
+                "p",
+                `thread closes in ${timeUntil(
+                  7 * 24 * 60 * 60 * 1000 - timePassed
+                )}`
+              ),
           auth
             ? isOwner
               ? OwnerPanel({
@@ -49,7 +70,9 @@ export const index_route: Route = {
             : null,
           isOwner ? h("hr") : null,
           ThreadEntries({ entries: data.entries }),
-          !auth
+          over
+            ? null
+            : !auth
             ? SubmitNonAuth({ threadcount: data.entries.length })
             : SubmitLinkForm({
                 action: `/t/${routeParams.thread}/reply`,
@@ -219,3 +242,15 @@ const SubmitNonAuth = (props: { threadcount: number }) =>
       ),
     ]
   );
+
+function timeUntil(ms: number) {
+  let minutes = Math.floor(ms / 1000 / 60);
+  if (minutes === 0) return "Now";
+  if (minutes < 60) {
+    return `${minutes} minutes`;
+  }
+  let hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hours`;
+  let days = Math.floor(hours / 24);
+  return `${days} days`;
+}

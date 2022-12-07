@@ -69,6 +69,8 @@ let routes = [
     ) => {
       let metadata = await state.storage.get<Metadata>("metadata");
       if (!metadata) return {};
+      let timePassed = Date.now() - new Date(metadata.dateCreated).getTime();
+      if (timePassed > 7 * 24 * 60 * 60 * 1000) return {};
 
       let entry = {
         title: msg.title,
