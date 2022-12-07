@@ -165,32 +165,35 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
                 h(
                   "p",
                   {
-                    style:
-                      "margin: 0; line-height: 2em; font-size: 0.84em; font-style: italic;",
+                    style: "margin: 0; line-height: 2em; font-size: 0.84em;",
                   },
                   [
-                    !e.submitter.display_name
-                      ? "anonymous"
-                      : !e.submitter.homepage
-                      ? e.submitter.display_name
-                      : h(
-                          "a",
-                          { href: e.submitter.homepage },
-                          e.submitter.display_name
-                        ),
+                    h(
+                      "span",
+                      { style: "font-style: italic;" },
+                      !e.submitter.display_name
+                        ? "anonymous"
+                        : !e.submitter.homepage
+                        ? e.submitter.display_name
+                        : h(
+                            "a",
+                            { href: e.submitter.homepage },
+                            e.submitter.display_name
+                          )
+                    ),
+                    h("span", " 〰 "),
+                    h(
+                      "span",
+                      {
+                        style: "font-style: italic; color: #867012;",
+                      },
+                      new Date(e.date).toLocaleString(undefined, {
+                        dateStyle: "short",
+                        // timeStyle: "short",
+                        // dayPeriod: "short",
+                      })
+                    ),
                   ]
-                ),
-                h(
-                  "p",
-                  {
-                    style:
-                      "margin: 0; line-height: 2em; font-size: 0.72em; font-style: italic; color: #867012;",
-                  },
-                  new Date(e.date).toLocaleString(undefined, {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                    // dayPeriod: "short",
-                  })
                 ),
               ]),
             ]
