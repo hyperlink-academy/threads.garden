@@ -21,6 +21,7 @@ type InboxEntry = {
 type Subscriptions = {
   threadID: string;
   threadTitle: string;
+  dateCreated: string;
 };
 
 type Metadata = { owner: string; display_name?: string; homepage?: string };
@@ -131,7 +132,12 @@ let routes = [
   makeRoute({
     route: "add_subscription",
     handler: async (
-      msg: { username: string; threadID: string; threadTitle: string },
+      msg: {
+        username: string;
+        threadID: string;
+        threadTitle: string;
+        dateCreated: string;
+      },
       { state }
     ) => {
       let metadata = await state.storage.get<Metadata>("metadata");
@@ -141,7 +147,11 @@ let routes = [
         (await state.storage.get<Subscriptions[]>("subscriptions")) || [];
       await state.storage.put<Subscriptions[]>("subscriptions", [
         ...subscriptions,
-        { threadTitle: msg.threadTitle, threadID: msg.threadID },
+        {
+          threadTitle: msg.threadTitle,
+          threadID: msg.threadID,
+          dateCreated: msg.dateCreated,
+        },
       ]);
       return {};
     },

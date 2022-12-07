@@ -44,6 +44,7 @@ export const thread_routes: Route[] = [
         username: auth.username,
         threadID: routeParams.thread,
         threadTitle: data.metadata.title,
+        dateCreated: data.metadata.dateCreated,
       });
 
       return redirect(`/t/${routeParams.thread}`);
