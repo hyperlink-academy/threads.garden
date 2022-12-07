@@ -38,12 +38,13 @@ export const LoginRoutes: Route[] = [
           minute: "numeric",
         })})`,
         h("div", [
-          (h("h1", "Hi! Welcome to threads.garden"),
-          h("span", [
+          h("h1", "Hi! Welcome to threads.garden"),
+          h("p", [
             `Click `,
             h("a", { href: link.toString() }, "here"),
             ` to sign in.`,
-          ])),
+          ]),
+          h("p", [`Or, copy this code: `, h("code", {}, loginToken.token)]),
         ])(),
         env.POSTMARK_API_TOKEN
       );
@@ -54,7 +55,16 @@ export const LoginRoutes: Route[] = [
           h("p", [
             "We sent an an email to ",
             h("code", emailNormalized),
-            ". Click the link there to login.",
+            ". Click the link there to login. Or copy and paste the code below",
+            h("form", { action: "/magic_link" }, [
+              h("input", {
+                style: "display:none;",
+                value: emailNormalized,
+                name: "email",
+              }),
+              h("input", { name: "token", autocomplete: "off" }),
+              h("button", "login"),
+            ]),
           ])
         ),
         {
