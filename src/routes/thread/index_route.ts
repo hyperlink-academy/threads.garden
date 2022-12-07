@@ -17,7 +17,6 @@ export const index_route: Route = {
       username: auth?.username,
     });
     let action = data.subscribed ? "unsubscribe" : "subscribe";
-    let pendingReplies = data.entries.filter((f) => f.approved === null);
     let isOwner = auth?.username === data.metadata.owner;
 
     return new Response(
@@ -31,7 +30,6 @@ export const index_route: Route = {
           auth
             ? isOwner
               ? OwnerPanel({
-                  pendingReplies: data.pending_entries,
                   threadID: routeParams.thread,
                   threadName: data.metadata.title,
                 })
@@ -67,11 +65,7 @@ export const index_route: Route = {
   },
 };
 
-const OwnerPanel = (props: {
-  pendingReplies: ThreadEntry[];
-  threadName: string;
-  threadID: string;
-}) => {
+const OwnerPanel = (props: { threadName: string; threadID: string }) => {
   return h(
     "div",
     { class: "p-4 bg-grey rounded", style: "padding-bottom: 8px;" },
@@ -93,48 +87,6 @@ const OwnerPanel = (props: {
           h("button", { class: "destructive disabled" }, "delete thread"),
         ]
       ),
-      props.pendingReplies.length === 0
-        ? null
-        : h("div", { style: "margin-bottom: 32px;" }, [
-            h("h3", "Pending Replies"),
-            h(
-              "ul",
-              { style: "line-height: 2em;" },
-              props.pendingReplies.map((e) =>
-                h(
-                  "li",
-                  h(
-                    "div",
-                    {
-                      style: `display: flex; flex-direction: row; gap: 4px; justify-content: space-between;`,
-                    },
-                    [
-                      h("a", { href: e.url }, e.title),
-                      h(
-                        "form",
-                        {
-                          action: `/t/${props.threadID}/entry/${e.id}`,
-                          method: "POST",
-                        },
-                        [
-                          h(
-                            "button",
-                            { name: "approve", value: "approve" },
-                            "approve"
-                          ),
-                          h(
-                            "button",
-                            { name: "approve", value: "reject" },
-                            "reject"
-                          ),
-                        ]
-                      ),
-                    ]
-                  )
-                )
-              )
-            ),
-          ]),
     ]
   );
 };

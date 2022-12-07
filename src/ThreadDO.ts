@@ -53,50 +53,6 @@ let routes = [
     },
   }),
   makeRoute({
-    route: "update_pending_entry",
-    handler: async (
-      msg: { entry: string; username: string; approved: boolean },
-      { state, env }
-    ) => {
-      let metadata = await state.storage.get<Metadata>("metadata");
-      if (metadata?.owner !== msg.username) return { approved: false };
-      let pending_entries =
-        (await state.storage.get<ThreadEntry[]>("pending_entries")) || [];
-      let entryIndex = pending_entries.findIndex((f) => f.id === msg.entry);
-      if (entryIndex === -1) return {};
-
-      let subscribers =
-        (await state.storage.get<Subscriber[]>("subscribers")) || [];
-      let entry = pending_entries[entryIndex];
-
-      if (msg.approved) {
-        let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
-        await state.storage.put<ThreadEntry[]>("entries", [
-          ...entries,
-          { ...entry, approved: true },
-        ]);
-        let date = new Date().toISOString();
-        for (let subscriber of subscribers) {
-          let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
-          await userDOClient(userDO, "add_subscribed_thread_entry", {
-            threadTitle: metadata.title,
-            date,
-            title: entry.title,
-            url: entry.url,
-            thread: state.id.toString(),
-          });
-        }
-      }
-
-      await state.storage.put<ThreadEntry[]>(
-        "pending_entries",
-        pending_entries.filter((_, index) => index !== entryIndex)
-      );
-
-      return {};
-    },
-  }),
-  makeRoute({
     route: "add_entry",
     handler: async (
       msg: {
@@ -109,26 +65,39 @@ let routes = [
         };
         date: string;
       },
-      { state }
+      { state, env }
     ) => {
-      let pending_entries =
-        (await state.storage.get<ThreadEntry[]>("pending_entries")) || [];
       let metadata = await state.storage.get<Metadata>("metadata");
       if (!metadata) return {};
 
-      let newEntries = [
-        ...pending_entries,
-        {
-          title: msg.title,
-          url: msg.url,
-          date: msg.date,
-          approved: null,
-          submitter: msg.submitter,
-          id: crypto.randomUUID(),
-        },
-      ];
-      await state.storage.put<ThreadEntry[]>("pending_entries", newEntries);
-      return { entries: newEntries };
+      let entry = {
+        title: msg.title,
+        url: msg.url,
+        date: msg.date,
+        approved: true,
+        submitter: msg.submitter,
+        id: crypto.randomUUID(),
+      };
+
+      let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      await state.storage.put<ThreadEntry[]>("entries", [...entries, entry]);
+
+      let date = new Date().toISOString();
+
+      let subscribers =
+        (await state.storage.get<Subscriber[]>("subscribers")) || [];
+      for (let subscriber of subscribers) {
+        let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
+        await userDOClient(userDO, "add_subscribed_thread_entry", {
+          threadTitle: metadata.title,
+          date,
+          title: entry.title,
+          url: entry.url,
+          thread: state.id.toString(),
+        });
+      }
+
+      return {};
     },
   }),
   makeRoute({

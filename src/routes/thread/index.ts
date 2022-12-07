@@ -8,27 +8,6 @@ import { four04, redirect } from "utils";
 export const thread_routes: Route[] = [
   index_route,
   {
-    method: ["POST"],
-    route: "/t/:thread/entry/:entry",
-    handler: async (request, { routeParams, env }) => {
-      if (!routeParams.thread || !routeParams.entry) return four04();
-      let auth = await verifyRequest(request, env.TOKEN_SECRET);
-      if (!auth) return redirect(`/t/${routeParams.thread}`);
-      let data = await request.formData();
-      let threadStub = env.THREAD.get(
-        env.THREAD.idFromString(routeParams.thread)
-      );
-
-      await threadDOClient(threadStub, "update_pending_entry", {
-        entry: routeParams.entry,
-        approved: data.get("approve") === "approve",
-        username: auth.username,
-      });
-
-      return redirect(`/t/${routeParams.thread}`);
-    },
-  },
-  {
     method: "POST",
     route: "/t/:thread/delete",
     handler: async (request, { routeParams, env }) => {
@@ -37,7 +16,7 @@ export const thread_routes: Route[] = [
       if (!auth) return redirect(`/t/${routeParams.thread}`);
 
       let userDO = env.USER.get(env.USER.idFromName(auth.username));
-      let data = await userDOClient(userDO, "delete_thread", {
+      await userDOClient(userDO, "delete_thread", {
         username: auth.username,
         threadID: routeParams.thread,
       });
