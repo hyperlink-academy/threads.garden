@@ -160,7 +160,7 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
               )}px;`,
             },
             [
-              h("a", { href: e.url }, e.title),
+              h("a", { href: e.url, style: "margin-right: 16px;" }, e.title),
               h("div", [
                 h(
                   "p",
