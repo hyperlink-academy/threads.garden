@@ -9,6 +9,7 @@ export type ThreadEntry = {
   approved: boolean | null;
   date: string;
   submitter: { username: string; display_name?: string; homepage?: string };
+  replies?: string[];
 };
 type Subscriber = { username: string };
 type Metadata = {
@@ -58,6 +59,7 @@ let routes = [
       msg: {
         url: string;
         title: string;
+        replies: string[];
         submitter: {
           username: string;
           display_name?: string;
@@ -76,6 +78,7 @@ let routes = [
         title: msg.title,
         url: msg.url,
         date: msg.date,
+        replies: msg.replies,
         approved: true,
         submitter: msg.submitter,
         id: crypto.randomUUID(),

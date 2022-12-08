@@ -77,6 +77,7 @@ export const thread_routes: Route[] = [
       let formData = await request.formData();
       let url = formData.get("url");
       let title = formData.get("title");
+      let replies = formData.getAll("reply").map((f) => f.toString());
       if (!url || !title) return new Response("error, no url");
       if (!auth) return redirect(`/t/${routeParams.thread}`);
 
@@ -87,6 +88,7 @@ export const thread_routes: Route[] = [
         date: new Date().toISOString(),
         url: url.toString(),
         title: title.toString(),
+        replies,
         submitter: auth,
       });
 

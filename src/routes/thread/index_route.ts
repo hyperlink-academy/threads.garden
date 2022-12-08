@@ -69,16 +69,21 @@ export const index_route: Route = {
                 )
             : null,
           isOwner ? h("hr") : null,
-          h(ThreadEntries, { entries: data.entries }),
-          over
-            ? null
-            : !auth
-            ? h(SubmitNonAuth, { threadcount: data.entries.length })
-            : h(SubmitLinkForm, {
-                action: `/t/${routeParams.thread}/reply`,
-                buttonText: "reply",
-                threadcount: data.entries.length,
-              }),
+          h(
+            "form",
+            { action: `/t/${routeParams.thread}/reply`, method: "POST" },
+            [
+              h(ThreadEntries, { entries: data.entries }),
+              over
+                ? null
+                : !auth
+                ? h(SubmitNonAuth, { threadcount: data.entries.length })
+                : h(SubmitLinkForm, {
+                    buttonText: "reply",
+                    threadcount: data.entries.length,
+                  }),
+            ]
+          ),
         ]
       ),
       {
@@ -124,7 +129,20 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
       .filter((f) => f.approved === true)
       .sort((a, b) => (a.date > b.date ? 1 : -1))
       .map((e, index) => {
+        let id = `thread-entry-${index}`;
         return h("li", [
+          !e.replies || e.replies?.length === 0
+            ? null
+            : h(
+                "div",
+                e.replies.map((replyID) => {
+                  let reply = props.entries.find(
+                    (entry) => entry.id === replyID
+                  );
+                  if (!reply) return null;
+                  return h("a", { href: reply.url }, reply.title);
+                })
+              ),
           h(
             "div",
             {
@@ -170,6 +188,13 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
                     ),
                   ]
                 ),
+                h("input", {
+                  type: "checkbox",
+                  name: "reply",
+                  value: e.id,
+                  id,
+                }),
+                h("label", { for: id }, "reply"),
               ]),
             ]
           ),
@@ -189,17 +214,11 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
   );
 };
 
-const SubmitLinkForm = (props: {
-  action: string;
-  buttonText: string;
-  threadcount: number;
-}) =>
+const SubmitLinkForm = (props: { buttonText: string; threadcount: number }) =>
   h(
-    "form",
+    "div",
     {
       style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -48px;`,
-      method: "POST",
-      action: props.action,
     },
     [
       h(
