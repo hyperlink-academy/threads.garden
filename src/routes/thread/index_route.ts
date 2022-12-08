@@ -193,7 +193,7 @@ const ThreadEntries = (props: {
                 ),
                 !props.auth
                   ? ""
-                  : h("form", [
+                  : h("div", [
                       h("input", {
                         type: "checkbox",
                         name: "reply",
