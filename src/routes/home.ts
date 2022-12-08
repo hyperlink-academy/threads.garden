@@ -30,6 +30,10 @@ export const home_route: Route = {
             "🌱🍄🌿🌼🍃🌸🌱🍄🌿🌼🍃🌸🌱🍄🌿🌼🍃🌸🌱"
           ),
           h("h3", "Threads: Created"),
+          h(CreateThreadForm, {
+            action: "/create_thread",
+            buttonText: "create",
+          }),
           data.threads.length === 0
             ? null
             : h(
@@ -39,10 +43,6 @@ export const home_route: Route = {
                   h("li", h("a", { href: `/t/${t.id}` }, t.title))
                 )
               ),
-          h(SubmitLinkForm, {
-            action: "/create_thread",
-            buttonText: "create",
-          }),
           h("h3", "Threads: Subscribed"),
           data.subscriptions.length === 0
             ? null
@@ -120,7 +120,10 @@ const SetNameForm = (props: { display_name: string; homepage: string }) => {
   ]);
 };
 
-export const SubmitLinkForm = (props: { action: string; buttonText: string }) =>
+export const CreateThreadForm = (props: {
+  action: string;
+  buttonText: string;
+}) =>
   h(
     "form",
     {
