@@ -25,6 +25,6 @@ export const update_user_route: Route = {
       headers,
       env.TOKEN_SECRET
     );
-    return redirect("/home", headers);
+    return redirect("/", headers);
   },
 };

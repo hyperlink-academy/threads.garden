@@ -98,7 +98,7 @@ export const LoginRoutes: Route[] = [
           headers,
           env.TOKEN_SECRET
         );
-        return redirect("/home", headers);
+        return redirect("/", headers);
       } else
         return new Response(
           html(
@@ -133,7 +133,7 @@ export const LoginRoutes: Route[] = [
       if (auth)
         return new Response("", {
           status: 302,
-          headers: { Location: "/home" },
+          headers: { Location: "/" },
         });
       return new Response(LoginPage({ incorrect: false }), {
         headers: { "Content-type": "text/html" },

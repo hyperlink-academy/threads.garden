@@ -104,11 +104,7 @@ export function html(
       h("body", [
         h("div", { class: "body-wrapper" }, [
           h("div", { class: "flex flex-row gap-2 space-between" }, [
-            h(
-              "a",
-              { href: props.token ? "/home" : "/" },
-              h("h1", "threads.garden")
-            ),
+            h("a", { href: "/" }, h("h1", "threads.garden")),
 
             h(
               "div",

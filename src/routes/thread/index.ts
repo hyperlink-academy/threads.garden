@@ -21,7 +21,7 @@ export const thread_routes: Route[] = [
         threadID: routeParams.thread,
       });
 
-      return redirect(`/home`);
+      return redirect(`/`);
     },
   },
   {

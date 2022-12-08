@@ -1,11 +1,14 @@
 import { Route } from "router";
 import { verifyRequest } from "auth";
 import { h, html } from "html";
+import { home_route } from "./home";
 export const index_route: Route = {
   method: "GET",
   route: "/",
-  handler: async (req, { env }) => {
+  handler: async (req, ctx) => {
+    let { env } = ctx;
     let auth = await verifyRequest(req, env.TOKEN_SECRET);
+    if (auth) return home_route.handler(req, ctx);
     return new Response(
       html({ head: h("title", "threads.garden"), token: auth }, [
         h("p", { style: "color: green; padding-left: 3%;" }, "—=-_-˜¯-_-≈-"),
