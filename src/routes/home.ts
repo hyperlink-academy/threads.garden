@@ -29,13 +29,17 @@ export const home_route: Route = {
             { style: "font-size: 0.9em; padding: 16px 0;" },
             "🌱🍄🌿🌼🍃🌸🌱🍄🌿🌼🍃🌸🌱🍄🌿🌼🍃🌸🌱"
           ),
-          h("h3", "Threads: Created"),
+          h("h3", "Created"),
           h(CreateThreadForm, {
             action: "/create_thread",
             buttonText: "create",
           }),
           data.threads.length === 0
-            ? null
+            ? h(
+                "p",
+                { style: "font-style: italic;" },
+                `you haven't started any threads — enter a title and hit "create" to make one!`
+              )
             : h(
                 "ul",
                 { style: "line-height: 2em;" },
@@ -43,9 +47,13 @@ export const home_route: Route = {
                   h("li", h("a", { href: `/t/${t.id}` }, t.title))
                 )
               ),
-          h("h3", "Threads: Subscribed"),
+          h("h3", "Subscribed"),
           data.subscriptions.length === 0
-            ? null
+            ? h(
+                "p",
+                { style: "font-style: italic;" },
+                `you aren't subscribed to any threads`
+              )
             : h(
                 "ul",
                 { style: "line-height: 2em;" },
