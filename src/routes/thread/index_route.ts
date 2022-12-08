@@ -231,7 +231,7 @@ const SubmitLinkForm = (props: { buttonText: string; threadcount: number }) =>
       h(
         "p",
         { style: "margin: 0 0 12px 0; font-style: italic;" },
-        "add a reply?"
+        props.threadcount == 0 ? "start this thread!" : "add a reply?"
       ),
       h("label", { for: "title" }),
       h("input", {
