@@ -1,4 +1,4 @@
-import { verifyRequest } from "auth";
+import { Token, verifyRequest } from "auth";
 import { h, html } from "html";
 import { Route } from "router";
 import { threadDOClient, ThreadEntry } from "ThreadDO";
@@ -73,7 +73,7 @@ export const index_route: Route = {
             "form",
             { action: `/t/${routeParams.thread}/reply`, method: "POST" },
             [
-              h(ThreadEntries, { entries: data.entries }),
+              h(ThreadEntries, { entries: data.entries, auth: auth }),
               over
                 ? null
                 : !auth
@@ -119,7 +119,10 @@ const OwnerPanel = (props: { threadName: string; threadID: string }) => {
   );
 };
 
-const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
+const ThreadEntries = (props: {
+  entries: ThreadEntry[];
+  auth: Token | null;
+}) => {
   return h(
     "ul",
     {
@@ -188,13 +191,17 @@ const ThreadEntries = (props: { entries: ThreadEntry[] }) => {
                     ),
                   ]
                 ),
-                h("input", {
-                  type: "checkbox",
-                  name: "reply",
-                  value: e.id,
-                  id,
-                }),
-                h("label", { for: id }, "reply"),
+                !props.auth
+                  ? ""
+                  : h("form", [
+                      h("input", {
+                        type: "checkbox",
+                        name: "reply",
+                        value: e.id,
+                        id,
+                      }),
+                      h("label", { for: id }, "reply"),
+                    ]),
               ]),
             ]
           ),
