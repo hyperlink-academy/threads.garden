@@ -5,6 +5,7 @@ import { home_route } from "./routes/home";
 import { index_route } from "./routes/index_route";
 import { LoginRoutes } from "./routes/login";
 import { thread_routes } from "./routes/thread";
+import styles from "./styles.css";
 
 export type Env = {
   TOKEN_SECRET: string;
@@ -29,5 +30,15 @@ let router = Router({
     index_route,
     ...thread_routes,
     ...LoginRoutes,
+
+    {
+      method: "GET",
+      route: "/styles.css",
+      handler: async () => {
+        return new Response(styles, {
+          headers: { "Content-type": "text/css" },
+        });
+      },
+    },
   ],
 });

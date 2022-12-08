@@ -1,6 +1,5 @@
 export type Child = string | (() => string) | null;
 import { Token } from "auth";
-import styles from "./styles.css";
 type Attributes = { [k: string]: string | boolean };
 
 export function h<Props>(
@@ -92,6 +91,8 @@ export function html(
     h("html", { lang: "en-US" }, [
       h("head", [
         ...[props.head].flat(),
+        h("link", { rel: "preload", as: "style", href: "/styles.css" }),
+        h("link", { rel: "stylesheet", href: "/styles.css" }),
         h("meta", { charset: "utf-8" }),
         h("meta", { name: "viewport", content: "width=device-width" }),
         h("meta", {
@@ -99,7 +100,6 @@ export function html(
           content:
             "threads.garden - a small site for making threads on the internet",
         }),
-        h("style", styles),
       ]),
       h("body", [
         h("div", { class: "body-wrapper" }, [
