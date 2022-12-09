@@ -76,9 +76,8 @@ export const index_route: Route = {
               h(ThreadEntries, { entries: data.entries, auth: auth }),
               over
                 ? null
-                : !auth
-                ? h(SubmitNonAuth, { threadcount: data.entries.length })
-                : h(SubmitLinkForm, {
+                : h(SubmitReply, {
+                    authorized: !!auth,
                     buttonText: "reply",
                     threadcount: data.entries.length,
                   }),
@@ -137,7 +136,7 @@ const ThreadEntries = (props: {
           h(
             "div",
             {
-              style: `background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
+              style: `background: #fcf3a9; padding: 16px; padding-bottom:0px; border-radius: 16px; margin-right: ${Math.floor(
                 Math.random() * (32 - -16) + -16
               )}px; margin-left: ${Math.floor(
                 Math.random() * (32 - -16) + -16
@@ -167,77 +166,59 @@ const ThreadEntries = (props: {
                       ]);
                     })
                   ),
-              h(
-                "div",
-                {
-                  style:
-                    "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; ",
-                },
-                [
-                  h(
-                    "a",
-                    { href: e.url, style: "margin-right: 16px;" },
-                    e.title
-                  ),
-                  h("div", [
+              h("div", { class: "flex flex-col" }, [
+                h(
+                  "div",
+                  {
+                    style:
+                      "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding-bottom: 4px;",
+                  },
+                  [
                     h(
-                      "p",
-                      {
-                        style:
-                          "margin: 0; line-height: 2em; font-size: 0.84em;",
-                      },
-                      [
-                        h(
-                          "span",
-                          { style: "font-style: italic;" },
-                          !e.submitter.display_name
-                            ? "anonymous"
-                            : !e.submitter.homepage
-                            ? e.submitter.display_name
-                            : h(
-                                "a",
-                                { href: e.submitter.homepage },
-                                e.submitter.display_name
-                              )
-                        ),
-                        h("span", " 〰 "),
-                        h(
-                          "span",
-                          {
-                            style: "font-style: italic; color: #867012;",
-                          },
-                          new Date(e.date).toLocaleString(undefined, {
-                            dateStyle: "short",
-                            // timeStyle: "short",
-                            // dayPeriod: "short",
-                          })
-                        ),
-                      ]
+                      "a",
+                      { href: e.url, style: "margin-right: 16px;" },
+                      e.title
                     ),
-                    !props.auth
-                      ? ""
-                      : h(
-                          "div",
-                          {
-                            class: "reply-wrapper",
-                            style:
-                              "background: #e1ecca; font-size: 0.84em; text-align: right; float: right; padding: 0px 16px; margin: 16px -16px -16px 0; border-radius: 16px 0 0 0;",
-                          },
-                          [
-                            h("input", {
-                              type: "checkbox",
-                              name: "reply",
-                              value: e.id,
-                              id,
-                              style:
-                                "accent-color: green; transform: scale(1.5);",
-                            }),
-                            h("label", { for: id }, "reply"),
-                          ]
-                        ),
-                  ]),
-                ]
-              ),
+                    h("div", [
+                      h(
+                        "p",
+                        {
+                          style:
+                            "margin: 0; line-height: 2em; font-size: 0.84em;",
+                        },
+                        [
+                          h(
+                            "span",
+                            { style: "font-style: italic;" },
+                            !e.submitter.display_name
+                              ? "anonymous"
+                              : !e.submitter.homepage
+                              ? e.submitter.display_name
+                              : h(
+                                  "a",
+                                  { href: e.submitter.homepage },
+                                  e.submitter.display_name
+                                )
+                          ),
+                          h("span", " 〰 "),
+                          h(
+                            "span",
+                            {
+                              style: "font-style: italic; color: #867012;",
+                            },
+                            new Date(e.date).toLocaleString(undefined, {
+                              dateStyle: "short",
+                              // timeStyle: "short",
+                              // dayPeriod: "short",
+                            })
+                          ),
+                        ]
+                      ),
+                    ]),
+                  ]
+                ),
+                h(ReplyButton, { auth: !!props.auth }),
+              ]),
             ]
           ),
           h("div", {
@@ -256,8 +237,56 @@ const ThreadEntries = (props: {
   );
 };
 
-const SubmitLinkForm = (props: { buttonText: string; threadcount: number }) =>
-  h(
+const ReplyButton = (props: { auth: boolean }) => {
+  if (!props.auth) return null;
+  return h(
+    "div",
+    {
+      class: "w-full",
+      style: "justify-content:flex-end;display:flex;",
+    },
+    h(
+      "div",
+      {
+        class: "reply-wrapper",
+        style:
+          "width: max-content; background: #e1ecca; font-size: 0.84em; text-align: right; padding: 0px 16px; margin-right: -16px; border-radius: 16px 0 0 0;",
+      },
+      [
+        h("input", {
+          type: "checkbox",
+          name: "reply",
+          value: e.id,
+          id,
+          style: "accent-color: green; transform: scale(1.5);",
+        }),
+        h("label", { for: id }, "reply"),
+      ]
+    )
+  );
+};
+
+const SubmitReply = (props: {
+  buttonText: string;
+  threadcount: number;
+  authorized: boolean;
+}) => {
+  if (!props.authorized)
+    return h(
+      "div",
+      {
+        style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -48px;`,
+      },
+      [
+        h(
+          "p",
+          { style: "margin: 4px 0 8px 0; font-style: italic;" },
+          "please log in to reply to this thread!"
+        ),
+      ]
+    );
+
+  return h(
     "div",
     {
       style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -48px;`,
@@ -288,21 +317,7 @@ const SubmitLinkForm = (props: { buttonText: string; threadcount: number }) =>
       h("button", props.buttonText),
     ]
   );
-
-const SubmitNonAuth = (props: { threadcount: number }) =>
-  h(
-    "div",
-    {
-      style: `background: #d3ea94; padding: 16px; border-radius: 16px; margin-top: -48px;`,
-    },
-    [
-      h(
-        "p",
-        { style: "margin: 4px 0 8px 0; font-style: italic;" },
-        "please log in to reply to this thread!"
-      ),
-    ]
-  );
+};
 
 function timeUntil(ms: number) {
   let minutes = Math.floor(ms / 1000 / 60);

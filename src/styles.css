@@ -23,6 +23,10 @@ body {
   min-height: 84vh;
 }
 
+.w-full {
+  width: 100%;
+}
+
 a {
   color: green;
 }
@@ -49,6 +53,10 @@ pre {
 
 .flex-row {
   flex-direction: row;
+}
+
+.flex-col {
+  flex-direction: column;
 }
 
 .gap-2 {
