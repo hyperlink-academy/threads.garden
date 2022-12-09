@@ -134,75 +134,100 @@ const ThreadEntries = (props: {
       .map((e, index) => {
         let id = `thread-entry-${index}`;
         return h("li", [
-          !e.replies || e.replies?.length === 0
-            ? null
-            : h(
-                "div",
-                e.replies.map((replyID) => {
-                  let reply = props.entries.find(
-                    (entry) => entry.id === replyID
-                  );
-                  if (!reply) return null;
-                  return h("a", { href: reply.url }, reply.title);
-                })
-              ),
           h(
             "div",
             {
-              style: `display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
+              style: `background: #fcf3a9; padding: 16px; border-radius: 16px; margin-right: ${Math.floor(
                 Math.random() * (32 - -16) + -16
               )}px; margin-left: ${Math.floor(
                 Math.random() * (32 - -16) + -16
               )}px;`,
             },
             [
-              h("a", { href: e.url, style: "margin-right: 16px;" }, e.title),
-              h("div", [
-                h(
-                  "p",
-                  {
-                    style: "margin: 0; line-height: 2em; font-size: 0.84em;",
-                  },
-                  [
+              !e.replies || e.replies?.length === 0
+                ? null
+                : h(
+                    "div",
+                    {
+                      style:
+                        "background: #e6f6e7; padding: 8px 16px; border-radius: 16px 16px 0 0; margin: -16px -16px 16px -16px;",
+                    },
+                    e.replies.map((replyID) => {
+                      let reply = props.entries.find(
+                        (entry) => entry.id === replyID
+                      );
+                      if (!reply) return null;
+                      return h("span", [
+                        h("span", "↪ "),
+                        h(
+                          "a",
+                          { href: reply.url, style: "margin-right: 8px;" },
+                          reply.title
+                        ),
+                      ]);
+                    })
+                  ),
+              h(
+                "div",
+                {
+                  style:
+                    "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; ",
+                },
+                [
+                  h(
+                    "a",
+                    { href: e.url, style: "margin-right: 16px;" },
+                    e.title
+                  ),
+                  h("div", [
                     h(
-                      "span",
-                      { style: "font-style: italic;" },
-                      !e.submitter.display_name
-                        ? "anonymous"
-                        : !e.submitter.homepage
-                        ? e.submitter.display_name
-                        : h(
-                            "a",
-                            { href: e.submitter.homepage },
-                            e.submitter.display_name
-                          )
-                    ),
-                    h("span", " 〰 "),
-                    h(
-                      "span",
+                      "p",
                       {
-                        style: "font-style: italic; color: #867012;",
+                        style:
+                          "margin: 0; line-height: 2em; font-size: 0.84em;",
                       },
-                      new Date(e.date).toLocaleString(undefined, {
-                        dateStyle: "short",
-                        // timeStyle: "short",
-                        // dayPeriod: "short",
-                      })
+                      [
+                        h(
+                          "span",
+                          { style: "font-style: italic;" },
+                          !e.submitter.display_name
+                            ? "anonymous"
+                            : !e.submitter.homepage
+                            ? e.submitter.display_name
+                            : h(
+                                "a",
+                                { href: e.submitter.homepage },
+                                e.submitter.display_name
+                              )
+                        ),
+                        h("span", " 〰 "),
+                        h(
+                          "span",
+                          {
+                            style: "font-style: italic; color: #867012;",
+                          },
+                          new Date(e.date).toLocaleString(undefined, {
+                            dateStyle: "short",
+                            // timeStyle: "short",
+                            // dayPeriod: "short",
+                          })
+                        ),
+                      ]
                     ),
-                  ]
-                ),
-                !props.auth
-                  ? ""
-                  : h("div", [
-                      h("input", {
-                        type: "checkbox",
-                        name: "reply",
-                        value: e.id,
-                        id,
-                      }),
-                      h("label", { for: id }, "reply"),
-                    ]),
-              ]),
+                    !props.auth
+                      ? ""
+                      : h("div", [
+                          h("input", {
+                            type: "checkbox",
+                            name: "reply",
+                            value: e.id,
+                            id,
+                          }),
+                          h("label", { for: id }, "reply"),
+                        ]),
+                  ]),
+                ]
+              ),
             ]
           ),
           h("div", {
