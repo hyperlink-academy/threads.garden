@@ -216,15 +216,25 @@ const ThreadEntries = (props: {
                     ),
                     !props.auth
                       ? ""
-                      : h("div", [
-                          h("input", {
-                            type: "checkbox",
-                            name: "reply",
-                            value: e.id,
-                            id,
-                          }),
-                          h("label", { for: id }, "reply"),
-                        ]),
+                      : h(
+                          "div",
+                          {
+                            class: "reply-wrapper",
+                            style:
+                              "background: #e1ecca; font-size: 0.84em; text-align: right; float: right; padding: 0px 16px; margin: 16px -16px -16px 0; border-radius: 16px 0 0 0;",
+                          },
+                          [
+                            h("input", {
+                              type: "checkbox",
+                              name: "reply",
+                              value: e.id,
+                              id,
+                              style:
+                                "accent-color: green; transform: scale(1.5);",
+                            }),
+                            h("label", { for: id }, "reply"),
+                          ]
+                        ),
                   ]),
                 ]
               ),

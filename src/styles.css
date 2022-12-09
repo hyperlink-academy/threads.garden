@@ -93,3 +93,10 @@ hr {
   border: 1px green dashed;
   margin: 32px 0;
 }
+
+.reply-wrapper {
+  display: none;
+}
+form:focus-within .reply-wrapper {
+  display: initial;
+}
