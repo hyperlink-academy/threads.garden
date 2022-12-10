@@ -3,7 +3,7 @@ import { Token } from "auth";
 type Attributes = { [k: string]: string | boolean };
 
 export function h<Props>(
-  t: string | ((props: Props) => () => string),
+  t: string | ((props: Props) => Child),
   attrsOrChildren?: Props | Child | Child[],
   _children?: Child | Child[]
 ) {
