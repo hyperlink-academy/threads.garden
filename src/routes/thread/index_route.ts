@@ -25,7 +25,7 @@ export const index_route: Route = {
       html(
         {
           token: auth,
-          head: h("title", "t: " + data.metadata.title),
+          head: h("title", "thread: " + data.metadata.title),
         },
         [
           h("div", { class: "flex flex-row gap-2" }, [
