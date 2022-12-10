@@ -17,7 +17,11 @@ export function h<Props>(
   )
     attrs = attrsOrChildren;
   else children = attrsOrChildren as Child | Child[];
-  if (typeof t === "function") return t({ ...attrs, children } as Props);
+  if (typeof t === "function") {
+    let child = t({ ...attrs, children } as Props);
+    if (typeof child === "function") return child;
+    else return () => (child as null | string) || "";
+  }
   return () =>
     `<${t} ${renderAttributes(attrs)}> 
     ${children ? renderChildren(children) : ""}

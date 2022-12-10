@@ -217,7 +217,7 @@ const ThreadEntries = (props: {
                     ]),
                   ]
                 ),
-                h(ReplyButton, { auth: !!props.auth }),
+                h(ReplyButton, { auth: !!props.auth, id: e.id, index }),
               ]),
             ]
           ),
@@ -237,8 +237,9 @@ const ThreadEntries = (props: {
   );
 };
 
-const ReplyButton = (props: { auth: boolean }) => {
+const ReplyButton = (props: { auth: boolean; id: string; index: number }) => {
   if (!props.auth) return null;
+  let id = `thread-entry-${props.index}`;
   return h(
     "div",
     {
@@ -256,7 +257,7 @@ const ReplyButton = (props: { auth: boolean }) => {
         h("input", {
           type: "checkbox",
           name: "reply",
-          value: e.id,
+          value: props.id,
           id,
           style: "accent-color: green; transform: scale(1.5);",
         }),
