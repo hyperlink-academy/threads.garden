@@ -47,6 +47,11 @@ export const home_route: Route = {
                   h("li", h("a", { href: `/t/${t.id}` }, t.title))
                 )
               ),
+          h(
+            "p",
+            { style: "font-size: 0.9em; padding: 16px 0;" },
+            "🌳🍃🌿🌼🐝🌷🌳🍃🌿🌼🐝🌷🌳🍃🌿🌼🐝🌷🌳"
+          ),
           h("h3", "Subscribed"),
           data.subscriptions.length === 0
             ? h(
@@ -64,7 +69,7 @@ export const home_route: Route = {
           h(
             "p",
             { style: "font-size: 0.9em; padding: 16px 0;" },
-            "🌳🍃🌿🌼🐝🌷🌳🍃🌿🌼🐝🌷🌳🍃🌿🌼🐝🌷🌳"
+            "🌼🌱🐞🌱🌺🌱🪲🌱🌻🌱🐜🌱🍄🌱🐛🌱🌸🌱🦋"
           ),
         ]
       ),
@@ -80,7 +85,7 @@ const Settings = (props: {
   homepage?: string;
   username: string;
 }) => {
-  return h("details", { class: "p-4 bg-grey rounded" }, [
+  return h("details", [
     h(
       "summary",
       {
@@ -96,13 +101,15 @@ const Settings = (props: {
         " 🌱",
       ]
     ),
-    h("div", { style: "margin-bottom: 8px;" }, [
-      h("a", { href: "/logout" }, "logout"),
+    h("div", { style: "margin-top: 0.8em;", class: "p-4 bg-grey rounded" }, [
+      h("div", { style: "margin-bottom: 8px;" }, [
+        h("a", { href: "/logout" }, "logout"),
+      ]),
+      h(SetNameForm, {
+        display_name: props.display_name || "",
+        homepage: props.homepage || "",
+      }),
     ]),
-    h(SetNameForm, {
-      display_name: props.display_name || "",
-      homepage: props.homepage || "",
-    }),
   ]);
 };
 

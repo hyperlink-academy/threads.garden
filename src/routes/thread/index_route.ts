@@ -32,7 +32,10 @@ export const index_route: Route = {
             h("h2", data.metadata.title),
             h(
               "p",
-              { class: "align-self-center" },
+              {
+                class: "align-self-center",
+                style: "font-style: italic; color: #867012;",
+              },
               new Date(data.metadata.dateCreated).toLocaleString(undefined, {
                 dateStyle: "short",
                 // timeStyle: "short",
@@ -41,9 +44,14 @@ export const index_route: Route = {
             ),
           ]),
           over
-            ? h("p", "thread closed")
+            ? h(
+                "p",
+                { style: "font-style: italic; color: #933939; margin-top: 0;" },
+                "thread closed"
+              )
             : h(
                 "p",
+                { style: "font-style: italic; color: #933939; margin-top: 0;" },
                 `thread closes in ${timeUntil(
                   7 * 24 * 60 * 60 * 1000 - timePassed
                 )}`
@@ -93,29 +101,33 @@ export const index_route: Route = {
 };
 
 const OwnerPanel = (props: { threadName: string; threadID: string }) => {
-  return h(
-    "div",
-    { class: "p-4 bg-grey rounded", style: "padding-bottom: 8px;" },
-    [
-      h(
-        "form",
-        {
-          class: "invalid",
-          action: `/t/${props.threadID}/delete`,
-          method: "POST",
-        },
-        [
-          h("input", {
-            style: "min-width: 160px;",
-            required: true,
-            pattern: props.threadName,
-            placeholder: "type thread name to delete",
-          }),
-          h("button", { class: "destructive disabled" }, "delete thread"),
-        ]
-      ),
-    ]
-  );
+  return h("details", [
+    h(
+      "summary",
+      {
+        style: "font-size: 1.2em; line-height: 2em; font-weight: bold;",
+      },
+      "settings"
+    ),
+    h(
+      "form",
+      {
+        class: "invalid p-4 bg-grey rounded",
+        style: "padding-bottom: 8px; margin-top: 0.8em;",
+        action: `/t/${props.threadID}/delete`,
+        method: "POST",
+      },
+      [
+        h("input", {
+          style: "min-width: 160px;",
+          required: true,
+          pattern: props.threadName,
+          placeholder: "type thread name to delete",
+        }),
+        h("button", { class: "destructive disabled" }, "delete thread"),
+      ]
+    ),
+  ]);
 };
 
 const ThreadEntries = (props: {
