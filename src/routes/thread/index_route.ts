@@ -21,6 +21,7 @@ export const index_route: Route = {
 
     let timePassed = Date.now() - new Date(data.metadata.dateCreated).getTime();
     let over = timePassed > 7 * 24 * 60 * 60 * 1000;
+
     return new Response(
       html(
         {
@@ -46,12 +47,18 @@ export const index_route: Route = {
           over
             ? h(
                 "p",
-                { style: "font-style: italic; color: #933939; margin-top: 0;" },
+                {
+                  style:
+                    "font-style: italic; color: #933939; margin-top: 0; margin-bottom: 32px;",
+                },
                 "thread closed"
               )
             : h(
                 "p",
-                { style: "font-style: italic; color: #933939; margin-top: 0;" },
+                {
+                  style:
+                    "font-style: italic; color: #933939; margin-top: 0; margin-bottom: 32px;",
+                },
                 `thread closes in ${timeUntil(
                   7 * 24 * 60 * 60 * 1000 - timePassed
                 )}`
@@ -81,7 +88,11 @@ export const index_route: Route = {
             "form",
             { action: `/t/${routeParams.thread}/reply`, method: "POST" },
             [
-              h(ThreadEntries, { entries: data.entries, auth: auth }),
+              h(ThreadEntries, {
+                entries: data.entries,
+                auth: auth,
+                over: over,
+              }),
               over
                 ? null
                 : h(SubmitReply, {
@@ -133,6 +144,7 @@ const OwnerPanel = (props: { threadName: string; threadID: string }) => {
 const ThreadEntries = (props: {
   entries: ThreadEntry[];
   auth: Token | null;
+  over: boolean;
 }) => {
   return h(
     "ul",
@@ -183,7 +195,7 @@ const ThreadEntries = (props: {
                   "div",
                   {
                     style:
-                      "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding-bottom: 4px;",
+                      "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding-bottom: 16px;",
                   },
                   [
                     h(
@@ -233,17 +245,19 @@ const ThreadEntries = (props: {
               ]),
             ]
           ),
-          h("div", {
-            style: `padding: 16px 0; ${
-              index % 2 == 0
-                ? `margin-left: 50%; border-left: 2px dashed darkgreen; border-radius: ${Math.floor(
-                    Math.random() * (16 - 4) + 4
-                  )}px 0 0 ${Math.floor(Math.random() * (16 - 4) + 4)}px;`
-                : `margin-right: 50%; border-right: 2px dashed darkgreen; border-radius: 0 ${Math.floor(
-                    Math.random() * (16 - 4) + 4
-                  )}px ${Math.floor(Math.random() * (16 - 4) + 4)}px 0;`
-            }`,
-          }),
+          props.over && index == props.entries.length - 1
+            ? null
+            : h("div", {
+                style: `padding: 16px 0; ${
+                  index % 2 == 0
+                    ? `margin-left: 50%; border-left: 2px dashed darkgreen; border-radius: ${Math.floor(
+                        Math.random() * (16 - 4) + 4
+                      )}px 0 0 ${Math.floor(Math.random() * (16 - 4) + 4)}px;`
+                    : `margin-right: 50%; border-right: 2px dashed darkgreen; border-radius: 0 ${Math.floor(
+                        Math.random() * (16 - 4) + 4
+                      )}px ${Math.floor(Math.random() * (16 - 4) + 4)}px 0;`
+                }`,
+              }),
         ]);
       })
   );

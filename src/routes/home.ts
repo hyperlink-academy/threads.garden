@@ -25,9 +25,26 @@ export const home_route: Route = {
         [
           h(Settings, { ...data.metadata, username: auth.username }),
           h(
-            "p",
-            { style: "font-size: 0.9em; padding: 16px 0;" },
-            "🌱🍄🌿🌼🍃🌸🌱🍄🌿🌼🍃🌸🌱🍄🌿🌼🍃🌸🌱"
+            "div",
+            {
+              style:
+                "width: 100%; text-align: center; display: flex; flex-flow: row nowrap; justify-content: space-between; padding: 16px 0; font-size: 0.8em;",
+            },
+            [
+              h("span", "🌱"),
+              h("span", "🍄"),
+              h("span", "🌿"),
+              h("span", "🌼"),
+              h("span", "🍃"),
+              h("span", "🌸"),
+              h("span", "🌱"),
+              h("span", "🍄"),
+              h("span", "🌿"),
+              h("span", "🌼"),
+              h("span", "🍃"),
+              h("span", "🌸"),
+              h("span", "🌱"),
+            ]
           ),
           h("h3", "Created"),
           h(CreateThreadForm, {
@@ -48,9 +65,26 @@ export const home_route: Route = {
                 )
               ),
           h(
-            "p",
-            { style: "font-size: 0.9em; padding: 16px 0;" },
-            "🌳🍃🌿🌼🐝🌷🌳🍃🌿🌼🐝🌷🌳🍃🌿🌼🐝🌷🌳"
+            "div",
+            {
+              style:
+                "width: 100%; text-align: center; display: flex; flex-flow: row nowrap; justify-content: space-between; padding: 16px 0; font-size: 0.8em;",
+            },
+            [
+              h("span", "🌳"),
+              h("span", "🍃"),
+              h("span", "🌿"),
+              h("span", "🌼"),
+              h("span", "🐝"),
+              h("span", "🌷"),
+              h("span", "🌳"),
+              h("span", "🍃"),
+              h("span", "🌿"),
+              h("span", "🌼"),
+              h("span", "🐝"),
+              h("span", "🌷"),
+              h("span", "🌳"),
+            ]
           ),
           h("h3", "Subscribed"),
           data.subscriptions.length === 0
@@ -67,9 +101,26 @@ export const home_route: Route = {
                 )
               ),
           h(
-            "p",
-            { style: "font-size: 0.9em; padding: 16px 0;" },
-            "🌼🌱🐞🌱🌺🌱🪲🌱🌻🌱🐜🌱🍄🌱🐛🌱🌸🌱🦋"
+            "div",
+            {
+              style:
+                "width: 100%; text-align: center; display: flex; flex-flow: row nowrap; justify-content: space-between; padding: 16px 0; font-size: 0.8em;",
+            },
+            [
+              h("span", "🌼"),
+              h("span", "🌱"),
+              h("span", "🐞"),
+              h("span", "🌱"),
+              h("span", "🌺"),
+              h("span", "🌱"),
+              h("span", "🪲"),
+              h("span", "🌱"),
+              h("span", "🌻"),
+              h("span", "🌱"),
+              h("span", "🐛"),
+              h("span", "🌱"),
+              h("span", "🌼"),
+            ]
           ),
         ]
       ),
