@@ -99,6 +99,7 @@ export const index_route: Route = {
                     authorized: !!auth,
                     buttonText: "reply",
                     threadcount: data.entries.length,
+                    displayName: auth?.display_name,
                   }),
             ]
           ),
@@ -297,6 +298,7 @@ const SubmitReply = (props: {
   buttonText: string;
   threadcount: number;
   authorized: boolean;
+  displayName?: string;
 }) => {
   if (!props.authorized)
     return h(
@@ -324,6 +326,16 @@ const SubmitReply = (props: {
         { style: "margin: 0 0 12px 0; font-style: italic;" },
         props.threadcount == 0 ? "start this thread!" : "add a reply?"
       ),
+      !props.displayName
+        ? h(
+            "p",
+            {
+              style:
+                "color: #b53100; margin: 0 0 16px 0; font-size: 0.84em; font-style: italic;",
+            },
+            "posting anonymously…set a display name from your homepage"
+          )
+        : "",
       h("label", { for: "title" }),
       h("input", {
         placeholder: "title",
