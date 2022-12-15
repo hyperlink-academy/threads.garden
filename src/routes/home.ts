@@ -61,7 +61,7 @@ export const home_route: Route = {
                 "ul",
                 {
                   style:
-                    "line-height: 2em; list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;",
+                    "line-height: 1.5em; list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;",
                 },
                 data.threads.map((t) =>
                   h(
@@ -81,9 +81,22 @@ export const home_route: Route = {
                         )}deg, 60%, 30%)'; this.style.transform='scale(1)'`,
                         style: `color: white; background-color: hsl(${Math.floor(
                           Math.random() * (150 - 60) + 60
-                        )}deg, 60%, 30%); transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out; padding: 32px 16px; border-radius: 16px; flex: auto; text-decoration: none;`,
+                        )}deg, 60%, 30%); transition: background-color 0.1s ease-in-out, transform 0.1s ease-in-out; padding: 32px 16px; border-radius: 16px; display: flex; flex: auto; flex-direction: column; flex-wrap: wrap; text-decoration: none; gap: 8px;`,
                       },
-                      t.title
+                      [
+                        h("span", t.title),
+                        Date.now() - new Date(t.dateCreated).getTime() >
+                        7 * 24 * 60 * 60 * 1000
+                          ? ""
+                          : h(
+                              "span",
+                              {
+                                style:
+                                  "color: green; background-color: white; font-size: 0.72em; padding: 0 8px; border-radius: 8px; place-self: flex-start;",
+                              },
+                              "active"
+                            ),
+                      ]
                     )
                   )
                 )
