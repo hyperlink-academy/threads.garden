@@ -59,9 +59,33 @@ export const home_route: Route = {
               )
             : h(
                 "ul",
-                { style: "line-height: 2em;" },
+                {
+                  style:
+                    "line-height: 2em; list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;",
+                },
                 data.threads.map((t) =>
-                  h("li", h("a", { href: `/t/${t.id}` }, t.title))
+                  h(
+                    "li",
+                    {
+                      style: "display: flex; flex: auto;",
+                    },
+                    h(
+                      "a",
+                      {
+                        href: `/t/${t.id}`,
+                        onMouseOver: `this.style.backgroundColor='hsl(${Math.floor(
+                          Math.random() * (150 - 60) + 60
+                        )}deg, 60%, 30%)'; this.style.transform='scale(1.02)'`,
+                        onMouseOut: `this.style.backgroundColor='hsl(${Math.floor(
+                          Math.random() * (150 - 60) + 60
+                        )}deg, 60%, 30%)'; this.style.transform='scale(1)'`,
+                        style: `color: white; background-color: hsl(${Math.floor(
+                          Math.random() * (150 - 60) + 60
+                        )}deg, 60%, 30%); transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out; padding: 32px 16px; border-radius: 16px; flex: auto; text-decoration: none;`,
+                      },
+                      t.title
+                    )
+                  )
                 )
               ),
           h(
