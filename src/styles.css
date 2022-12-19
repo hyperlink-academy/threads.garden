@@ -116,3 +116,9 @@ form:focus-within .reply-wrapper {
   transition: visibility 0s, opacity 0.25s ease-in-out 0.25s,
     max-height 0.5s ease-in-out;
 }
+/* NB: override focus-within to NOT show reply checkboxes for focused links */
+form:has(a:focus) .reply-wrapper {
+  visibility: hidden;
+  opacity: 0;
+  max-height: 0;
+}
