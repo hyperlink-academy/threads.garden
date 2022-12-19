@@ -1,7 +1,10 @@
 name = "threads-garden"
 account_id = "81c1ee2e102b2279be9311f73c01ec7f"
 workers_dev = true
-routes = ["threads.garden"]
+
+routes = [
+	{ pattern = "threads.garden", custom_domain = true, zone_name =  "threads.garden" }
+]
 
 usage_model = 'bundled'
 compatibility_flags = []
