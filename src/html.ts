@@ -120,9 +120,18 @@ export function html(
         ]),
         h("footer", [
           h("hr"),
+
           h("p", { style: "margin: -4px 0 18px 0" }, [
             "a project by ",
             h("a", { href: "https://hyperlink.academy" }, "hyperlink.academy"),
+            h(
+              "a",
+              {
+                href: "https://github.com/hyperlink-academy/threads.garden",
+                style: "float:right;",
+              },
+              "source"
+            ),
           ]),
         ]),
       ]),
