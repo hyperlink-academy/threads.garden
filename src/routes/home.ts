@@ -110,6 +110,7 @@ export const home_route: Route = {
                   h(ThreadItem, {
                     id: t.threadID,
                     title: t.threadTitle,
+                    dateCreated: t.dateCreated,
                   })
                 )
               ),
@@ -171,7 +172,7 @@ const ThreadItem = (props: {
       [
         h("span", props.title),
         props.dateCreated
-          ? Date.now() - new Date(props.dateCreated).getTime() >
+          ? Date.now() - new Date(props.dateCreated).getTime() <
             7 * 24 * 60 * 60 * 1000
             ? ""
             : h(
@@ -180,7 +181,7 @@ const ThreadItem = (props: {
                   style:
                     "color: green; background-color: white; font-size: 0.72em; padding: 0 8px; border-radius: 8px; place-self: flex-start;",
                 },
-                "active"
+                "closed"
               )
           : "",
       ]
