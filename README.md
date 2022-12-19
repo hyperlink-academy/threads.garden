@@ -1,77 +1,52 @@
-Hello! This is a little app I am building for fun. 
+Hello! This is a little website the hyperlink team built for fun and as a love letter to
+the internet.
 
-With that in mind what does it absolutely need to do? I need to do accounts.
-With a basic amount of verification, so that we can reasonably send emails.
+On this website you can:
 
-What is the *core* interaction here? Replying w/ a post, and receiving emails,
-AND moderation by default. 
+- create new threads
+- reply to threads you get linked to
+- subscribe to threads you get linked to
 
-How do you make moderation feel nice? Forget about it. It's basically entirely
-to prevent spam.
+There is no global listing of threads, or any kind of global community. It's a
+tool for you to use.
 
-## REQUIRED 
-### Environment Variables
-- TOKEN_SECRET: a secret string used for signing tokens
+## How it's made
 
-## Actions 
+This website is server-rendered and built ontop of Cloudflare Workers. It could
+be fairly easily adapted to run in any javascript server context.
 
-1. Make an account
+It has zero run-time dependencies, and uses `typescript`, `esbuild`, and
+`wrangler` in development.
 
-2. Create a new thread
+This constraint wasn't adopted for any particular moral reason, but rather just
+because it was a fun one.
 
-3. Reply to a thread
+## Working on the website
 
-4. Moderate a thread
-- See a list of unmoderated replies
-- Approve or deny
-- 
+If you want to play around and maybe try extending this code here's what you'll
+need:
 
-5. Subscribing to a thread
-- Have an account w/ a verified email
-- Get an email once a day w/ threads that have had new replies in the time since
-    last email
+### Environment variables
 
+- `TOKEN_SECRET`: a secret that will be used to sign authentication tokens
+- `POSTMARK_API_TOKEN`: An api token to send emails via postmark. If this isn't
+  set, emails will instead be logged to the console.
 
+### Developing Locally
 
-## Database
+First create a file called `.dev.vars` with the contents:
 
-### accounts
-- Username
-- hashed password
-- Subscribed threads
-- Email 
-  - (verified or not)
+```
+TOKEN_SECRET="SOME_RANDOM_STRING"
+```
 
-### Threads
-- Owner account (ref) (indexed)
-- ID (string)
-- Items
-  - Approved (boolean)
-  - URL (string)
+After that you should be able to run `npm i` followed by `npm run dev` to get
+the local wrangler dev server up and running!
 
-## Development flow
+If you want to use an email service even when developing locally, set a
+`POSTMARK_API_TOKEN` variable as well.
 
-Q: Where should I store data? Could probably swing it to be Durable Objects,
-which makes deployment simpler than otherwise. The notion there would be every
-account gets a DO, and every Thread gets a DO. Then we aggressively cache
-responses that are pure reads.
+### Deploying
 
-Alternatively could build on top of sqlite, maybe using fly.io? I guess could
-just run it on our own and assume that it's gonna deploy as simply as
-possible...
-
-I think Cloudflare might be the simplest, unfortunately. 
-
-Q: What front-end frame-work should I use?
-- /
-- /u/:user
-- /u/:user/t/:threads
-- /u/:user/settings
-
-It's kinda a fun constraint..., but maybe would be too large  pain? It is kinda
-fun... Just a zero-dependency application. Fuck it, let's try it.
-
-## Questions
-
-- Where should I store user data?? I could put it into a signed token. OR I
-    could put it into the DO and retrieve it.
+When deploying to cloudflare make sure to set the required environment
+variables, and adjust the `wrangler.toml` to match your `account_id` and such.
