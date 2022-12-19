@@ -95,4 +95,23 @@ export const thread_routes: Route[] = [
       return redirect(`/t/${routeParams.thread}`);
     },
   },
+  {
+    method: "GET",
+    route: "/t/:thread/:entry/delete",
+    handler: async (request, { routeParams, env }) => {
+      if (!routeParams.thread || !routeParams.entry) return four04();
+      let auth = await verifyRequest(request, env.TOKEN_SECRET);
+      if (!auth) return redirect(`/t/${routeParams.thread}`);
+
+      let threadStub = env.THREAD.get(
+        env.THREAD.idFromString(routeParams.thread)
+      );
+      await threadDOClient(threadStub, "delete_entry", {
+        entryID: routeParams.entry,
+        auth,
+      });
+
+      return redirect(`/t/${routeParams.thread}`);
+    },
+  },
 ];

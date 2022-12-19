@@ -53,6 +53,32 @@ let routes = [
       return {};
     },
   }),
+
+  makeRoute({
+    route: "delete_entry",
+    handler: async (
+      msg: { entryID: string; auth: { username: string } },
+      { state, env }
+    ) => {
+      // Remove the entries stored here, and send a message to all subscribers
+      // to remove it from their inboxes
+      let entries = (await state.storage.get<ThreadEntry[]>("entries")) || [];
+      await state.storage.put<ThreadEntry[]>(
+        "entries",
+        entries.filter((t) => t.id !== msg.entryID)
+      );
+
+      let subscribers =
+        (await state.storage.get<Subscriber[]>("subscribers")) || [];
+      for (let subscriber of subscribers) {
+        let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
+        await userDOClient(userDO, "remove_subscribed_thread_entry", {
+          entryID: msg.entryID,
+        });
+      }
+      return {};
+    },
+  }),
   makeRoute({
     route: "add_entry",
     handler: async (
@@ -94,6 +120,7 @@ let routes = [
       for (let subscriber of subscribers) {
         let userDO = env.USER.get(env.USER.idFromName(subscriber.username));
         await userDOClient(userDO, "add_subscribed_thread_entry", {
+          entryID: entry.id,
           threadTitle: metadata.title,
           date,
           title: entry.title,

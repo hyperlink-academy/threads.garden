@@ -11,6 +11,7 @@ type Thread = {
   title: string;
 };
 type InboxEntry = {
+  entryID: string;
   date: string;
   thread: string;
   threadTitle: string;
@@ -80,9 +81,26 @@ export class UserDO implements DurableObject {
 
 let routes = [
   makeRoute({
+    route: "remove_subscribed_thread_entry",
+    handler: async (
+      msg: {
+        entryID: string;
+      },
+      { state }
+    ) => {
+      let inbox = (await state.storage.get<InboxEntry[]>("inbox")) || [];
+      await state.storage.put<InboxEntry[]>(
+        "inbox",
+        inbox.filter((f) => f.thread !== msg.entryID)
+      );
+      return {};
+    },
+  }),
+  makeRoute({
     route: "add_subscribed_thread_entry",
     handler: async (
       msg: {
+        entryID: string;
         date: string;
         title: string;
         threadTitle: string;
