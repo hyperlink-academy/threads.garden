@@ -1,15 +1,24 @@
-export const sendEmail = async (
-  To: string,
-  Subject: string,
-  content: string,
-  POSTMARK_API_TOKEN?: string
-) => {
+export const sendEmail = async ({
+  To,
+  Subject,
+  content,
+  broadcast,
+  POSTMARK_API_TOKEN,
+}: {
+  broadcast?: boolean;
+  To: string;
+  Subject: string;
+  content: string;
+  POSTMARK_API_TOKEN?: string;
+}) => {
   if (POSTMARK_API_TOKEN) {
     try {
       await fetch("https://api.postmarkapp.com/email", {
         method: "POST",
         body: JSON.stringify({
-          From: "threads.garden <accounts@threads.garden>",
+          From: broadcast
+            ? "threads.garden <updates@threads.garden>"
+            : "threads.garden <accounts@threads.garden>",
           To,
           Subject: Subject,
           HtmlBody: `${HTMLTemplate}
@@ -51,7 +60,7 @@ export const sendEmail = async (
   </html>
           `,
           TextBody: content,
-          MessageStream: "outbound",
+          MessageStream: broadcast ? "broadcast" : "outbound",
         }),
         headers: {
           "Content-type": "application/json",

@@ -28,16 +28,16 @@ export const LoginRoutes: Route[] = [
       link.searchParams.set("email", emailNormalized);
       link.searchParams.set("token", loginToken.token);
 
-      await sendEmail(
-        emailNormalized,
-        `Sign In (${new Date().toLocaleDateString(undefined, {
+      await sendEmail({
+        To: emailNormalized,
+        Subject: `Sign In (${new Date().toLocaleDateString(undefined, {
           day: "2-digit",
           year: "numeric",
           month: "short",
           hour: "numeric",
           minute: "numeric",
         })})`,
-        h("div", [
+        content: h("div", [
           h("h1", "Hi! Welcome to threads.garden"),
           h("p", [
             `Click `,
@@ -46,8 +46,8 @@ export const LoginRoutes: Route[] = [
           ]),
           h("p", [`Or, copy this code: `, h("code", {}, loginToken.token)]),
         ])(),
-        env.POSTMARK_API_TOKEN
-      );
+        POSTMARK_API_TOKEN: env.POSTMARK_API_TOKEN,
+      });
 
       return new Response(
         html(

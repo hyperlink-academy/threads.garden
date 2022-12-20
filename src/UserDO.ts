@@ -50,12 +50,14 @@ export class UserDO implements DurableObject {
         else acc[i.thread] = [...acc[i.thread], i];
         return acc;
       }, {} as { [k: string]: InboxEntry[] });
-      await sendEmail(
-        metadata.owner,
-        `threads.garden: ${inbox.length} new thread ${
+      await sendEmail({
+        POSTMARK_API_TOKEN: this.env.POSTMARK_API_TOKEN,
+        broadcast: true,
+        To: metadata.owner,
+        Subject: `threads.garden: ${inbox.length} new thread ${
           inbox.length > 1 ? "replies" : "reply"
         }`,
-        h(
+        content: h(
           "ul",
           Object.values(entriesByThreadTitle).map((thread) => {
             return h("li", [
@@ -71,8 +73,7 @@ export class UserDO implements DurableObject {
             ]);
           })
         )(),
-        this.env.POSTMARK_API_TOKEN
-      );
+      });
       await this.state.storage.put("inbox", []);
     }
     await this.state.storage.setAlarm(getNextEmailTime());
