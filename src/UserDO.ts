@@ -126,7 +126,7 @@ let routes = [
       let data = await state.storage.get<LoginToken>(`login-token`);
       if (!data) return { valid: false };
 
-      if (data.token !== msg.token || Date.now() - data.ts > 1000 * 60 * 30)
+      if (data.token !== msg.token || Date.now() - data.ts > 1000 * 60 * 60)
         return { valid: false };
       state.storage.delete("login-token");
       let metadata = await state.storage.get<Metadata>("metadata");
